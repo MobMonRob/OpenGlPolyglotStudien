@@ -10,6 +10,20 @@
         <maven.compiler.release>23</maven.compiler.release>
         <exec.mainClass>de.dhbw.rahmlab.openglpolyglot.OpenGLPolyglot</exec.mainClass>
     </properties>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.graalvm.sdk/graal-sdk -->
+        <dependency>
+            <groupId>org.graalvm.sdk</groupId>
+            <artifactId>graal-sdk</artifactId>
+            <version>23.1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.nativeimage</groupId>
+            <artifactId>svm</artifactId>
+            <version>23.1.5</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -52,6 +66,9 @@
                         <goal>compile-no-fork</goal>
                       </goals>
                       <phase>package</phase>
+                      <configuration>
+                          <buildArgs></buildArgs>
+                      </configuration>
                     </execution>
                     <execution>
                     <id>test-native</id>
