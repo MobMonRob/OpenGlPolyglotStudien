@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot;
 
+import org.graalvm.nativeimage.IsolateThread;
 import org.graalvm.nativeimage.PinnedObject;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
@@ -51,7 +52,7 @@ public class OpenGLPolyglot {
     }
 
     @CEntryPoint
-    private static void display() {
+    private static void display(IsolateThread thread) {
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
 
         GL.pushMatrix();
@@ -66,16 +67,16 @@ public class OpenGLPolyglot {
     }
 
     private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
-        CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
+        CEntryPointLiteral.create(OpenGLPolyglot.class, "display", IsolateThread.class);
 
     private static float rotation = 0f;
 
     @CEntryPoint
-    private static void idle() {
+    private static void idle(IsolateThread thread) {
         rotation += 0.1f;
         GLUT.postRedisplay();
     }
 
     private static final CEntryPointLiteral<GLUT.Callback> idleCallback =
-            CEntryPointLiteral.create(OpenGLPolyglot.class, "idle");
+            CEntryPointLiteral.create(OpenGLPolyglot.class, "idle", IsolateThread.class);
 }
