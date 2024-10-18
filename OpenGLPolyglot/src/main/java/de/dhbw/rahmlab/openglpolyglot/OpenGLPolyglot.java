@@ -1,22 +1,17 @@
 package de.dhbw.rahmlab.openglpolyglot;
 
-import com.oracle.svm.core.c.CGlobalData;
-import com.oracle.svm.core.c.CGlobalDataFactory;
-import com.oracle.svm.core.c.function.CEntryPointOptions;
-import com.oracle.svm.core.c.function.CEntryPointSetup;
 import org.graalvm.nativeimage.PinnedObject;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.function.CEntryPointLiteral;
-import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
 
 @CContext(Directives.class)
 public class OpenGLPolyglot {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         initializeWindow(args);
         setUpLightingAndMaterials();
 
@@ -56,13 +51,11 @@ public class OpenGLPolyglot {
     }
 
     @CEntryPoint
-    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void display() {
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
 
         GL.pushMatrix();
-        GL.rotatef(rotation.get().read(), 0f, 1f, 1f);
+        GL.rotatef(rotation, 0f, 1f, 1f);
         try (var mat = PinnedObject.create(new float[] {1, 0, 0, 0})) {
             GL.materialfv(GL.FRONT(), GL.DIFFUSE(), mat.addressOfArrayElement(0));
         }
@@ -75,15 +68,11 @@ public class OpenGLPolyglot {
     private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
         CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
 
-    private static final CGlobalData<CFloatPointer> rotation = 
-        CGlobalDataFactory.createBytes(() -> 4);
+    private static float rotation = 0f;
 
     @CEntryPoint
-    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void idle() {
-        var rotPtr = rotation.get();
-        rotPtr.write(0.1f + rotPtr.read());
+        rotation += 0.1f;
         GLUT.postRedisplay();
     }
 
