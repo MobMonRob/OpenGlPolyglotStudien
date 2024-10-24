@@ -1,6 +1,7 @@
 package de.dhbw.rahmlab.openglpolyglot;
 
-import org.graalvm.nativeimage.IsolateThread;
+import com.oracle.svm.core.c.function.CEntryPointOptions;
+import com.oracle.svm.core.c.function.CEntryPointSetup;
 import org.graalvm.nativeimage.PinnedObject;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
@@ -52,7 +53,9 @@ public class OpenGLPolyglot {
     }
 
     @CEntryPoint
-    private static void display(IsolateThread thread) {
+    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
+                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
+    private static void display() {
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
 
         GL.pushMatrix();
@@ -67,16 +70,18 @@ public class OpenGLPolyglot {
     }
 
     private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
-        CEntryPointLiteral.create(OpenGLPolyglot.class, "display", IsolateThread.class);
+        CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
 
     private static float rotation = 0f;
 
     @CEntryPoint
-    private static void idle(IsolateThread thread) {
+    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
+                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
+    private static void idle() {
         rotation += 0.1f;
         GLUT.postRedisplay();
     }
 
     private static final CEntryPointLiteral<GLUT.Callback> idleCallback =
-            CEntryPointLiteral.create(OpenGLPolyglot.class, "idle", IsolateThread.class);
+            CEntryPointLiteral.create(OpenGLPolyglot.class, "idle");
 }
