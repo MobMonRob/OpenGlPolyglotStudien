@@ -67,7 +67,7 @@
                       </goals>
                       <phase>package</phase>
                       <configuration>
-                          <buildArgs></buildArgs>
+                          <buildArgs>--add-exports=org.graalvm.nativeimage.builder/com.oracle.svm.core.c=ALL-UNNAMED</buildArgs>
                       </configuration>
                     </execution>
                     <execution>
