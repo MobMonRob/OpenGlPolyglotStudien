@@ -39,9 +39,27 @@ public class GL {
 
     @CConstant("GL_DEPTH_BUFFER_BIT")
     static native int DEPTH_BUFFER_BIT();
+    
+    @CConstant("GL_QUADS")
+    static native int QUADS();
+    
+    @CConstant("GL_PROJECTION")
+    static native int PROJECTION();
+
+    @CConstant("GL_MODELVIEW")
+    static native int MODELVIEW();
 
     @CFunction("glClearColor")
     static native void clearColor(float red, float green, float blue, float alpha);
+
+    @CFunction("glColor3i")
+    static native void color3i(int red, int green, int blue);
+
+    @CFunction("glColor4i")
+    static native void color4i(int red, int green, int blue, int alpha);
+
+    @CFunction("glColor3f")
+    static native void color3f(float red, float green, float blue);
 
     @CFunction("glShadeModel")
     static native void shadeModel(int mode);
@@ -69,4 +87,28 @@ public class GL {
 
     @CFunction("glFlush")
     static native void flush();
+
+    @CFunction("glBegin")
+    static native void begin(int mode);
+
+    @CFunction("glVertex3f")
+    static native void vertex3f(float x, float y, float z);
+
+    @CFunction("glLoadIdentity")
+    static native void loadIdentity();
+
+    @CFunction("glViewPort")
+    static native void viewPort(int x, int y, int width, int height);
+
+    @CFunction("glMatrixMode")
+    static native void matrixMode(int mode);
+
+    @CFunction("glEnd")
+    static native void end();
+
+    @CFunction("glTranslatef")
+    static native void translatef(float x, float y, float z);
+
+    @CFunction("glScalef")
+    static native void scalef(float x, float y, float z);
 }

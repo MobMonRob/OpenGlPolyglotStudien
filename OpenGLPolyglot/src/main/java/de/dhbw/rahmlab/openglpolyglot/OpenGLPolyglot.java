@@ -4,7 +4,6 @@ import com.oracle.svm.core.c.CGlobalData;
 import com.oracle.svm.core.c.CGlobalDataFactory;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
-import org.graalvm.nativeimage.PinnedObject;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
@@ -22,6 +21,7 @@ public class OpenGLPolyglot {
 
         GLUT.displayFunc(displayCallback.getFunctionPointer());
         GLUT.idleFunc(idleCallback.getFunctionPointer());
+        GLUT.reshapeFunc(reshapeCallback.getFunctionPointer());
         GLUT.mainLoop();
     }
 
@@ -34,16 +34,16 @@ public class OpenGLPolyglot {
 
         GLUT.initDisplayMode(GLUT.SINGLE() | GLUT.RGB() | GLUT.DEPTH());
         GLUT.initWindowPosition(15, 15);
-        GLUT.initWindowSize(400, 400);
+        GLUT.initWindowSize(800, 800);
         try (var title = CTypeConversion.toCString("Utah Teapot - GraalVM")) {
             GLUT.createWindow(title.get());
         }
     }
 
     private static void setUpLightingAndMaterials() {
-        GL.clearColor(0.5f, 0.5f, 0.5f, 0f);
+        GL.clearColor(1f, 1f, 1f, 1f);
         GL.shadeModel(GL.SMOOTH());
-        try (var white = PinnedObject.create(new float[] {1f, 1f, 1f, 0f});
+        /*try (var white = PinnedObject.create(new float[] {1f, 1f, 1f, 0f});
                 var shine = PinnedObject.create(new float[] {70f})) {
             GL.lightfv(GL.LIGHT0(), GL.AMBIENT(), white.addressOfArrayElement(0));
             GL.lightfv(GL.LIGHT0(), GL.DIFFUSE(), white.addressOfArrayElement(0));
@@ -51,7 +51,7 @@ public class OpenGLPolyglot {
         }
 
         GL.enable(GL.LIGHTING());
-        GL.enable(GL.LIGHT0());
+        GL.enable(GL.LIGHT0());*/
         GL.enable(GL.DEPTH_TEST());
     }
 
@@ -60,15 +60,56 @@ public class OpenGLPolyglot {
                         epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void display() {
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
+        GL.loadIdentity();
 
-        GL.pushMatrix();
+        GL.scalef(0.5f, 0.5f, 0.5f);
         GL.rotatef(rotation.get().read(), 0f, 1f, 1f);
-        try (var mat = PinnedObject.create(new float[] {1, 0, 0, 0})) {
+        /*try (var mat = PinnedObject.create(new float[] {1, 0, 0, 0})) {
             GL.materialfv(GL.FRONT(), GL.DIFFUSE(), mat.addressOfArrayElement(0));
-        }
-        GLUT.wireTeapot(0.5);
-        GL.popMatrix();
+        }*/
 
+        GL.begin(GL.QUADS());
+        GL.color3f(1, 0, 0);
+
+        // vorne
+        GL.vertex3f(-1f, 1f, 1f);
+        GL.vertex3f(-1f, -1f, 1f);
+        GL.vertex3f(1f, -1f, 1f);
+        GL.vertex3f(1f, 1f, 1f);
+
+        // hinten
+        GL.vertex3f(-1f, 1f, -1f);
+        GL.vertex3f(-1f, -1f, -1f);
+        GL.vertex3f(1f, -1f, -1f);
+        GL.vertex3f(1f, 1f, -1f);
+
+        GL.color3f(0, 1, 0);
+        // oben
+        GL.vertex3f(-1, 1, -1);
+        GL.vertex3f(-1, 1, 1);
+        GL.vertex3f(1, 1, 1);
+        GL.vertex3f(1, 1, -1);
+        
+        // unten
+        GL.vertex3f(-1, -1, -1);
+        GL.vertex3f(-1, -1, 1);
+        GL.vertex3f(1, -1, 1);
+        GL.vertex3f(1, -1, -1);
+
+        GL.color3f(0, 0, 1);
+        // rechts
+        GL.vertex3f(1, 1, 1);
+        GL.vertex3f(1, -1, 1);
+        GL.vertex3f(1, -1, -1);
+        GL.vertex3f(1, 1, -1);
+
+        // links
+        GL.vertex3f(-1, 1, 1);
+        GL.vertex3f(-1, -1, 1);
+        GL.vertex3f(-1, -1, -1);
+        GL.vertex3f(-1, 1, -1);
+
+        GL.end();
         GL.flush();
     }
 
@@ -89,4 +130,18 @@ public class OpenGLPolyglot {
 
     private static final CEntryPointLiteral<GLUT.Callback> idleCallback =
             CEntryPointLiteral.create(OpenGLPolyglot.class, "idle");
+
+    @CEntryPoint
+    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
+                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
+    private static void reshape() {
+        /*GL.viewPort(0, 0, 10, 10);
+        GL.matrixMode(GL.PROJECTION());
+        GL.loadIdentity();
+        GLU.ortho2D(-10, 10, -10, 10);
+        GL.matrixMode(GL.MODELVIEW());*/
+    }
+
+    private static final CEntryPointLiteral<GLUT.Callback> reshapeCallback =
+            CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape");
 }
