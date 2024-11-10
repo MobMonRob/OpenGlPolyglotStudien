@@ -15,6 +15,21 @@ import org.graalvm.nativeimage.c.type.CTypeConversion;
 @CContext(Directives.class)
 public class OpenGLPolyglot {
 
+    public static final CGlobalData<CFloatPointer> xRotation =
+        CGlobalDataFactory.createBytes(() -> 4);
+
+    public static final CGlobalData<CFloatPointer> yRotation =
+        CGlobalDataFactory.createBytes(() -> 4);
+
+    private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
+        CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
+    
+    private static final CEntryPointLiteral<GLUT.Callback> idleCallback =
+        CEntryPointLiteral.create(OpenGLPolyglot.class, "idle");
+    
+    private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback =
+        CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape", int.class, int.class);
+
     public static void main(String[] args) {
         initializeWindow(args);
         setUpLightingAndMaterials();
@@ -22,8 +37,8 @@ public class OpenGLPolyglot {
         GLUT.displayFunc(displayCallback.getFunctionPointer());
         GLUT.idleFunc(idleCallback.getFunctionPointer());
         GLUT.reshapeFunc(reshapeCallback.getFunctionPointer());
-        GLUT.mouseFunc(mouseClickCallback.getFunctionPointer());
-        GLUT.motionFunc(mouseMotionCallback.getFunctionPointer());
+        GLUT.mouseFunc(Mouse.mouseClickCallback.getFunctionPointer());
+        GLUT.motionFunc(Mouse.mouseMotionCallback.getFunctionPointer());
         GLUT.mainLoop();
     }
 
@@ -71,53 +86,11 @@ public class OpenGLPolyglot {
             GL.materialfv(GL.FRONT(), GL.DIFFUSE(), mat.addressOfArrayElement(0));
         }*/
 
-        GL.begin(GL.QUADS());
-        GL.color3f(1, 0, 0);
-
-        // vorne
-        GL.vertex3f(-1f, 1f, 1f);
-        GL.vertex3f(-1f, -1f, 1f);
-        GL.vertex3f(1f, -1f, 1f);
-        GL.vertex3f(1f, 1f, 1f);
-
-        // hinten
-        GL.vertex3f(-1f, 1f, -1f);
-        GL.vertex3f(-1f, -1f, -1f);
-        GL.vertex3f(1f, -1f, -1f);
-        GL.vertex3f(1f, 1f, -1f);
-
-        GL.color3f(0, 1, 0);
-        // oben
-        GL.vertex3f(-1, 1, -1);
-        GL.vertex3f(-1, 1, 1);
-        GL.vertex3f(1, 1, 1);
-        GL.vertex3f(1, 1, -1);
-        
-        // unten
-        GL.vertex3f(-1, -1, -1);
-        GL.vertex3f(-1, -1, 1);
-        GL.vertex3f(1, -1, 1);
-        GL.vertex3f(1, -1, -1);
-
-        GL.color3f(0, 0, 1);
-        // rechts
-        GL.vertex3f(1, 1, 1);
-        GL.vertex3f(1, -1, 1);
-        GL.vertex3f(1, -1, -1);
-        GL.vertex3f(1, 1, -1);
-
-        // links
-        GL.vertex3f(-1, 1, 1);
-        GL.vertex3f(-1, -1, 1);
-        GL.vertex3f(-1, -1, -1);
-        GL.vertex3f(-1, 1, -1);
+        ShapeDrawer.drawCube();
 
         GL.end();
         GL.flush();
     }
-
-    private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
-        CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
 
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
@@ -125,9 +98,6 @@ public class OpenGLPolyglot {
     private static void idle() {
         GLUT.postRedisplay();
     }
-
-    private static final CEntryPointLiteral<GLUT.Callback> idleCallback =
-            CEntryPointLiteral.create(OpenGLPolyglot.class, "idle");
 
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
@@ -140,51 +110,4 @@ public class OpenGLPolyglot {
         GLU.ortho2D(-10 * ratio, 10 * ratio, -10, 10);
         GL.matrixMode(GL.MODELVIEW());
     }
-
-    private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback =
-            CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape", int.class, int.class);
-
-    private static final CGlobalData<CFloatPointer> xRotation =
-        CGlobalDataFactory.createBytes(() -> 4);
-
-    private static final CGlobalData<CFloatPointer> yRotation =
-        CGlobalDataFactory.createBytes(() -> 4);
-
-    private static final CGlobalData<CIntPointer> mouseX =
-        CGlobalDataFactory.createBytes(() -> 4);
-
-    private static final CGlobalData<CIntPointer> mouseY =
-        CGlobalDataFactory.createBytes(() -> 4);
-
-    @CEntryPoint
-    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
-    private static void onMouseMotion(int x, int y) {
-        var xRotationPtr = xRotation.get();
-        var yRotationPtr = yRotation.get();
-        var mouseXPtr = mouseX.get();
-        var mouseYPtr = mouseY.get();
-        var deltaX = x - mouseXPtr.read();
-        var deltaY = y - mouseYPtr.read();
-        // rotiere entlang der Y-Achse, wenn sich Maus in X-Richtung bewegt
-        xRotationPtr.write(deltaY + xRotationPtr.read());
-        // rotiere entlang der X-Achse, wenn sich Maus in Y-Richtung bewegt
-        yRotationPtr.write(deltaX + yRotationPtr.read());
-        mouseXPtr.write(x);
-        mouseYPtr.write(y);
-    }
-
-    private static final CEntryPointLiteral<GLUT.Callback2i> mouseMotionCallback =
-            CEntryPointLiteral.create(OpenGLPolyglot.class, "onMouseMotion", int.class, int.class);
-
-    @CEntryPoint
-    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
-    private static void onMouseClick(int button, int state, int x, int y) {
-        mouseX.get().write(x);
-        mouseY.get().write(y);
-    }
-
-    private static final CEntryPointLiteral<GLUT.Callback4i> mouseClickCallback =
-            CEntryPointLiteral.create(OpenGLPolyglot.class, "onMouseClick", int.class, int.class, int.class, int.class);
 }
