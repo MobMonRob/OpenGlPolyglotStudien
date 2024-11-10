@@ -105,9 +105,14 @@ public class GLUT {
     static native void swapBuffers();
 
     @CFunction("glutReshapeFunc")
-    static native void reshapeFunc(Callback callback);
+    static native void reshapeFunc(Callback2i callback);
 
     interface Callback extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke();
+    }
+
+    // Callback mit 2 int Parametern
+    interface Callback2i extends CFunctionPointer {
+        @InvokeCFunctionPointer void invoke(int arg1, int arg2);
     }
 }

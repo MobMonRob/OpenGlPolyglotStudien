@@ -97,8 +97,8 @@ public class GL {
     @CFunction("glLoadIdentity")
     static native void loadIdentity();
 
-    @CFunction("glViewPort")
-    static native void viewPort(int x, int y, int width, int height);
+    @CFunction("glViewport")
+    static native void viewport(int x, int y, int width, int height);
 
     @CFunction("glMatrixMode")
     static native void matrixMode(int mode);

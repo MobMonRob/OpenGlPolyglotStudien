@@ -134,14 +134,15 @@ public class OpenGLPolyglot {
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
                         epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
-    private static void reshape() {
-        /*GL.viewPort(0, 0, 10, 10);
+    private static void reshape(int width, int height) {
+        double ratio = (double) width / (double) height;
+        GL.viewport(0, 0, width, height);
         GL.matrixMode(GL.PROJECTION());
         GL.loadIdentity();
-        GLU.ortho2D(-10, 10, -10, 10);
-        GL.matrixMode(GL.MODELVIEW());*/
+        GLU.ortho2D(-10 * ratio, 10 * ratio, -10, 10);
+        GL.matrixMode(GL.MODELVIEW());
     }
 
-    private static final CEntryPointLiteral<GLUT.Callback> reshapeCallback =
-            CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape");
+    private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback =
+            CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape", int.class, int.class);
 }
