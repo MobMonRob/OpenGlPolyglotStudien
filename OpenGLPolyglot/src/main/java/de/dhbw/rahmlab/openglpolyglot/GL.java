@@ -118,4 +118,7 @@ public class GL {
 
     @CFunction("glScalef")
     static native void scalef(float x, float y, float z);
+
+    @CFunction("glOrtho")
+    static native void ortho(double left, double right, double bottom, double top, double near, double far);
 }

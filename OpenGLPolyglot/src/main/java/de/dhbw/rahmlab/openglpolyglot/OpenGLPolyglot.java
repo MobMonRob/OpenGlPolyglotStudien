@@ -117,7 +117,7 @@ public class OpenGLPolyglot {
         GL.viewport(0, 0, width, height);
         GL.matrixMode(GL.PROJECTION());
         GL.loadIdentity();
-        GLU.ortho2D(-10 * ratio, 10 * ratio, -10, 10);
+        GL.ortho(-10 * ratio, 10 * ratio, -10, 10, -10, 10);
         GL.matrixMode(GL.MODELVIEW());
     }
 }
