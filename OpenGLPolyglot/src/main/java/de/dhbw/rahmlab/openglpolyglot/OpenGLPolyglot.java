@@ -94,11 +94,16 @@ public class OpenGLPolyglot {
             GL.materialfv(GL.FRONT(), GL.DIFFUSE(), mat.addressOfArrayElement(0));
         }*/
 
+        ShapeDrawer.drawSphere(new Point3d(-2, 2, -2), 1.5f, Color.magenta);
+
+        ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2f);
+        ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2f);
+        ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2f);
+
         ShapeDrawer.drawCube(new Point3d(1, 0, 0), 1, new Color(0, 255, 127));
         ShapeDrawer.drawCube(new Point3d(0, 0, 0), 1, new Color(255, 127, 0));
         ShapeDrawer.drawCube(new Point3d(0, 0, 1), 1, new Color(127, 0, 255));
 
-        GL.end();
         GL.flush();
     }
 

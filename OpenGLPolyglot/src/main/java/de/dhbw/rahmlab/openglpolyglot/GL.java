@@ -40,7 +40,10 @@ public class GL {
 
     @CConstant("GL_DEPTH_BUFFER_BIT")
     static native int DEPTH_BUFFER_BIT();
-    
+
+    @CConstant("GL_LINES")
+    static native int LINES();
+
     @CConstant("GL_QUADS")
     static native int QUADS();
     
@@ -116,9 +119,15 @@ public class GL {
     @CFunction("glTranslatef")
     static native void translatef(float x, float y, float z);
 
+    @CFunction("glTranslated")
+    static native void translated(double x, double y, double z);
+
     @CFunction("glScalef")
     static native void scalef(float x, float y, float z);
 
     @CFunction("glOrtho")
     static native void ortho(double left, double right, double bottom, double top, double near, double far);
+
+    @CFunction("glLineWidth")
+    static native void lineWidth(float width);
 }
