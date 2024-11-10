@@ -23,6 +23,9 @@ public class OpenGLPolyglot {
     public static final CGlobalData<CFloatPointer> yRotation =
         CGlobalDataFactory.createBytes(() -> 4);
 
+    public static final CGlobalData<CFloatPointer> scale =
+        CGlobalDataFactory.createBytes(() -> 4);
+
     private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
         CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
     
@@ -33,6 +36,7 @@ public class OpenGLPolyglot {
         CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape", int.class, int.class);
 
     public static void main(String[] args) {
+        scale.get().write(1f);
         initializeWindow(args);
         setUpLightingAndMaterials();
 
@@ -78,9 +82,12 @@ public class OpenGLPolyglot {
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
                         epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void display() {
+        var scalef = scale.get().read();
+ 
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
         GL.loadIdentity();
 
+        GL.scalef(scalef, scalef, scalef);
         GL.rotatef(xRotation.get().read(), 1f, 0f, 0f);
         GL.rotatef(yRotation.get().read(), 0f, 1f, 0f);
         /*try (var mat = PinnedObject.create(new float[] {1, 0, 0, 0})) {

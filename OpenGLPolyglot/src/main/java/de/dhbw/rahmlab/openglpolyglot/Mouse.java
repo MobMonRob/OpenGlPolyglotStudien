@@ -46,6 +46,14 @@ public class Mouse {
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
                         epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void onMouseClick(int button, int state, int x, int y) {
+        var scalePtr = OpenGLPolyglot.scale.get();
+
+        if (button == 3 /* mouse wheel up */) {
+            scalePtr.write(scalePtr.read() * 1.1f);
+        } else if (button == 4 /* mouse wheel down */) {
+            scalePtr.write(scalePtr.read() * 0.9f);
+        }
+
         mouseX.get().write(x);
         mouseY.get().write(y);
     }
