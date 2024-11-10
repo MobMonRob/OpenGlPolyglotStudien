@@ -107,6 +107,15 @@ public class GLUT {
     @CFunction("glutReshapeFunc")
     static native void reshapeFunc(Callback2i callback);
 
+    @CFunction("glutMouseFunc")
+    static native void mouseFunc(Callback4i callback);
+
+    @CFunction("glutMotionFunc")
+    static native void motionFunc(Callback2i callback);
+
+    @CFunction("glutPassiveMotionFunc")
+    static native void passiveMotionFunc(Callback2i callback);
+
     interface Callback extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke();
     }
@@ -114,5 +123,10 @@ public class GLUT {
     // Callback mit 2 int Parametern
     interface Callback2i extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke(int arg1, int arg2);
+    }
+
+    // Callback mit 4 int Parametern
+    interface Callback4i extends CFunctionPointer {
+        @InvokeCFunctionPointer void invoke(int arg1, int arg2, int arg3, int arg4);
     }
 }
