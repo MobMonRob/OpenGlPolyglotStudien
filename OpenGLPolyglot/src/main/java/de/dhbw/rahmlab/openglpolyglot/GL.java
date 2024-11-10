@@ -4,6 +4,7 @@ import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.constant.CConstant;
 import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
+import org.graalvm.nativeimage.c.type.CUnsigned;
 
 @CContext(Directives.class)
 public class GL {
@@ -61,6 +62,9 @@ public class GL {
     @CFunction("glColor3f")
     static native void color3f(float red, float green, float blue);
 
+    @CFunction("glColor3ub")
+    static native void color3ub(@CUnsigned int red, @CUnsigned int green, @CUnsigned int blue);
+
     @CFunction("glShadeModel")
     static native void shadeModel(int mode);
 
@@ -93,6 +97,9 @@ public class GL {
 
     @CFunction("glVertex3f")
     static native void vertex3f(float x, float y, float z);
+
+    @CFunction("glVertex3d")
+    static native void vertex3d(double x, double y, double z);
 
     @CFunction("glLoadIdentity")
     static native void loadIdentity();

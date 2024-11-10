@@ -4,6 +4,7 @@ import com.oracle.svm.core.c.CGlobalData;
 import com.oracle.svm.core.c.CGlobalDataFactory;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
+import java.awt.Color;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
@@ -11,6 +12,7 @@ import org.graalvm.nativeimage.c.function.CEntryPointLiteral;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
+import org.jogamp.vecmath.Point3d;
 
 @CContext(Directives.class)
 public class OpenGLPolyglot {
@@ -79,14 +81,15 @@ public class OpenGLPolyglot {
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
         GL.loadIdentity();
 
-        GL.scalef(0.5f, 0.5f, 0.5f);
         GL.rotatef(xRotation.get().read(), 1f, 0f, 0f);
         GL.rotatef(yRotation.get().read(), 0f, 1f, 0f);
         /*try (var mat = PinnedObject.create(new float[] {1, 0, 0, 0})) {
             GL.materialfv(GL.FRONT(), GL.DIFFUSE(), mat.addressOfArrayElement(0));
         }*/
 
-        ShapeDrawer.drawCube();
+        ShapeDrawer.drawCube(new Point3d(1, 0, 0), 1, new Color(0, 255, 127));
+        ShapeDrawer.drawCube(new Point3d(0, 0, 0), 1, new Color(255, 127, 0));
+        ShapeDrawer.drawCube(new Point3d(0, 0, 1), 1, new Color(127, 0, 255));
 
         GL.end();
         GL.flush();
