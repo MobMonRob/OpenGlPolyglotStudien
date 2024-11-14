@@ -59,6 +59,9 @@ public class GL {
     @CConstant("GL_LINE_STRIP")
     static native int LINE_STRIP();
 
+    @CConstant("GL_POLYGON")
+    static native int POLYGON();
+
     @CFunction("glClearColor")
     static native void clearColor(float red, float green, float blue, float alpha);
 

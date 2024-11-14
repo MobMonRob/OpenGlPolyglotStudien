@@ -105,6 +105,13 @@ public class OpenGLPolyglot {
         ShapeDrawer.drawCircle(new Point3d(-2, 4, 3), new Vector3d(0, 1, 0), 20, 2.0, Color.red, true, false);
         ShapeDrawer.drawCircle(new Point3d(-2, 5, 4), new Vector3d(0, -1, -1), 20, 2.0, Color.orange, false, false);
 
+        ShapeDrawer.drawPolygon(new Point3d[] {
+            new Point3d(2, 2, 2),
+            new Point3d(3, 3, 3),
+            new Point3d(3, 0, 3),
+            new Point3d(1, -1, 1)
+        }, Color.blue);
+
         ShapeDrawer.drawCube(new Point3d(1, 0, 0), 1, new Color(0, 255, 127));
         ShapeDrawer.drawCube(new Point3d(0, 0, 0), 1, new Color(255, 127, 0));
         ShapeDrawer.drawCube(new Point3d(0, 0, 1), 1, new Color(127, 0, 255));

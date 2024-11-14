@@ -56,6 +56,17 @@ public class ShapeDrawer {
         GL.translated(-location.x, -location.y, -location.z);
     }
 
+    public static void drawPolygon(Point3d[] corners, Color color) {
+        GL.begin(GL.POLYGON());
+        GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
+
+        for (var corner : corners) {
+            GL.vertex3d(corner.x, corner.y, corner.z);
+        }
+
+        GL.end();
+    }
+
     public static void drawCube(Point3d location, double width, Color color) {
         var halfWidth = width / 2;
 
