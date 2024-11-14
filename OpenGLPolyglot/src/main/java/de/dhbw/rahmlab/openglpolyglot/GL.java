@@ -53,6 +53,12 @@ public class GL {
     @CConstant("GL_MODELVIEW")
     static native int MODELVIEW();
 
+    @CConstant("GL_TRIANGLE_FAN")
+    static native int TRIANGLE_FAN();
+
+    @CConstant("GL_LINE_STRIP")
+    static native int LINE_STRIP();
+
     @CFunction("glClearColor")
     static native void clearColor(float red, float green, float blue, float alpha);
 
@@ -92,6 +98,9 @@ public class GL {
     @CFunction("glRotatef")
     static native void rotatef(float angle, float x, float y, float z);
 
+    @CFunction("glRotated")
+    static native void rotated(double angle, double x, double y, double z);
+
     @CFunction("glFlush")
     static native void flush();
 
@@ -100,6 +109,9 @@ public class GL {
 
     @CFunction("glVertex3f")
     static native void vertex3f(float x, float y, float z);
+
+    @CFunction("glVertex2d")
+    static native void vertex2d(double x, double y);
 
     @CFunction("glVertex3d")
     static native void vertex3d(double x, double y, double z);

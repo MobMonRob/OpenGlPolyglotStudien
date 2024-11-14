@@ -2,6 +2,7 @@ package de.dhbw.rahmlab.openglpolyglot;
 
 import java.awt.Color;
 import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Vector3d;
 
 public class ShapeDrawer {
 
@@ -20,6 +21,39 @@ public class ShapeDrawer {
         GL.vertex3d(p2.x, p2.y, p2.z);
         GL.end();
         GL.lineWidth(1f);
+    }
+    
+    public static void drawCircle(Point3d location, Vector3d normal, int edges,
+            double radius, Color color, boolean isDashed, boolean isFilled) {
+
+        // verschiebe Koordinatensystem, sodass Kreismittelpunkt im Ursprung ist
+        GL.translated(location.x, location.y, location.z);
+
+        // rotiere Koordinatensystem, sodass Kreis auf xy-Ebene ist
+        var rotationAngle = getAngleToZAxis(normal);
+        GL.rotated(rotationAngle, normal.y, -normal.x, 0);
+
+        GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
+
+        if (isFilled) {
+            // zeichne Dreiecks-"Fächer" vom Mittelpunkt aus
+            // (performanter als GL_POLYGON, da Grafikkarten für Dreiecke optimiert sind)
+            GL.begin(GL.TRIANGLE_FAN());
+            GL.vertex3d(0, 0, 0);
+        } else if (isDashed) {
+            GL.begin(GL.LINES());
+        } else {
+            GL.begin(GL.LINE_STRIP());
+        }
+
+        for (int i = 0; i <= edges; i++) {
+            GL.vertex2d(radius * Math.cos(i * Math.TAU/edges),
+                        radius * Math.sin(i * Math.TAU/edges));
+        }
+
+        GL.end();
+        GL.rotated(-rotationAngle, normal.y, -normal.x, 0);
+        GL.translated(-location.x, -location.y, -location.z);
     }
 
     public static void drawCube(Point3d location, double width, Color color) {
@@ -71,5 +105,9 @@ public class ShapeDrawer {
         GL.vertex3d(location.x - halfWidth, location.y + halfWidth, location.z - halfWidth);
 
         GL.end();
+    }
+
+    private static double getAngleToZAxis(Vector3d v) {
+        return Math.toDegrees(Math.acos(v.z / Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z)));
     }
 }

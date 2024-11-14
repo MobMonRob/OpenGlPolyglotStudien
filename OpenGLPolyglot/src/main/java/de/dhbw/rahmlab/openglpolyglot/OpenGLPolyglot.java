@@ -13,6 +13,7 @@ import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
 import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Vector3d;
 
 @CContext(Directives.class)
 public class OpenGLPolyglot {
@@ -58,7 +59,7 @@ public class OpenGLPolyglot {
         GLUT.initDisplayMode(GLUT.SINGLE() | GLUT.RGB() | GLUT.DEPTH());
         GLUT.initWindowPosition(15, 15);
         GLUT.initWindowSize(800, 800);
-        try (var title = CTypeConversion.toCString("Utah Teapot - GraalVM")) {
+        try (var title = CTypeConversion.toCString("GraalVM OpenGL")) {
             GLUT.createWindow(title.get());
         }
     }
@@ -99,6 +100,10 @@ public class OpenGLPolyglot {
         ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2f);
         ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2f);
         ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2f);
+
+        ShapeDrawer.drawCircle(new Point3d(-2, 3, 2), new Vector3d(1, 0, 0), 20, 2.0, Color.yellow, false, true);
+        ShapeDrawer.drawCircle(new Point3d(-2, 4, 3), new Vector3d(0, 1, 0), 20, 2.0, Color.red, true, false);
+        ShapeDrawer.drawCircle(new Point3d(-2, 5, 4), new Vector3d(0, -1, -1), 20, 2.0, Color.orange, false, false);
 
         ShapeDrawer.drawCube(new Point3d(1, 0, 0), 1, new Color(0, 255, 127));
         ShapeDrawer.drawCube(new Point3d(0, 0, 0), 1, new Color(255, 127, 0));
