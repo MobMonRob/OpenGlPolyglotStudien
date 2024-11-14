@@ -101,6 +101,8 @@ public class OpenGLPolyglot {
         ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2f);
         ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2f);
 
+        ShapeDrawer.drawArrow(new Point3d(-2, -2, -2), new Vector3d(1, 1, 1), 0.1, Color.cyan);
+
         ShapeDrawer.drawCircle(new Point3d(-2, 3, 2), new Vector3d(1, 0, 0), 20, 2.0, Color.yellow, false, true);
         ShapeDrawer.drawCircle(new Point3d(-2, 4, 3), new Vector3d(0, 1, 0), 20, 2.0, Color.red, true, false);
         ShapeDrawer.drawCircle(new Point3d(-2, 5, 4), new Vector3d(0, -1, -1), 20, 2.0, Color.orange, false, false);

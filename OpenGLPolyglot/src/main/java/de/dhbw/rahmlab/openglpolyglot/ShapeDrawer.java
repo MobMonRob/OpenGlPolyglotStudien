@@ -8,6 +8,7 @@ public class ShapeDrawer {
 
     public static void drawSphere(Point3d location, double radius, Color color) {
         var quadric = GLU.newQuadric();
+        GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
         GL.translated(location.x, location.y, location.z);
         GLU.sphere(quadric, radius, 100, 20);
         GL.translated(-location.x, -location.y, -location.z);
@@ -22,7 +23,33 @@ public class ShapeDrawer {
         GL.end();
         GL.lineWidth(1f);
     }
-    
+
+    public static void drawArrow(Point3d location, Vector3d direction,
+            double radius, Color color) {
+
+        // verschiebe Koordinatensystem, sodass location im Ursprung ist
+        GL.translated(location.x, location.y, location.z);
+
+        // rotiere Koordinatensystem, sodass z-Achse in Pfeilrichtung zeigt
+        var rotationAngle = getAngleToZAxis(direction);
+        GL.rotated(rotationAngle, -direction.y, direction.x, 0);
+
+        GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
+
+        var coneHeight = radius * 2.5;
+        var cylinderHeight = getVectorLength(direction) - coneHeight;
+        var coneRadius = radius*1.6;
+        drawCylinder(radius, cylinderHeight);
+        drawCircle(true, false, 20, radius);
+        GL.translated(0, 0, cylinderHeight);
+        drawCone(coneRadius, coneHeight);
+        drawCircle(true, false, 20, coneRadius);
+
+        GL.translated(0, 0, -cylinderHeight);
+        GL.rotated(-rotationAngle, -direction.y, direction.x, 0);
+        GL.translated(-location.x, -location.y, -location.z);
+    }
+
     public static void drawCircle(Point3d location, Vector3d normal, int edges,
             double radius, Color color, boolean isDashed, boolean isFilled) {
 
@@ -31,10 +58,17 @@ public class ShapeDrawer {
 
         // rotiere Koordinatensystem, sodass Kreis auf xy-Ebene ist
         var rotationAngle = getAngleToZAxis(normal);
-        GL.rotated(rotationAngle, normal.y, -normal.x, 0);
+        GL.rotated(rotationAngle, -normal.y, normal.x, 0);
 
         GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
 
+        drawCircle(isFilled, isDashed, edges, radius);
+
+        GL.rotated(-rotationAngle, -normal.y, normal.x, 0);
+        GL.translated(-location.x, -location.y, -location.z);
+    }
+
+    private static void drawCircle(boolean isFilled, boolean isDashed, int edges, double radius) {
         if (isFilled) {
             // zeichne Dreiecks-"Fächer" vom Mittelpunkt aus
             // (performanter als GL_POLYGON, da Grafikkarten für Dreiecke optimiert sind)
@@ -48,12 +82,10 @@ public class ShapeDrawer {
 
         for (int i = 0; i <= edges; i++) {
             GL.vertex2d(radius * Math.cos(i * Math.TAU/edges),
-                        radius * Math.sin(i * Math.TAU/edges));
+                    radius * Math.sin(i * Math.TAU/edges));
         }
 
         GL.end();
-        GL.rotated(-rotationAngle, normal.y, -normal.x, 0);
-        GL.translated(-location.x, -location.y, -location.z);
     }
 
     public static void drawPolygon(Point3d[] corners, Color color) {
@@ -118,7 +150,19 @@ public class ShapeDrawer {
         GL.end();
     }
 
+    private static void drawCylinder(double radius, double height) {
+        GLU.cylinder(GLU.newQuadric(), radius, radius, height, 20, 20);
+    }
+
+    private static void drawCone(double radius, double height) {
+        GLU.cylinder(GLU.newQuadric(), radius, 0, height, 20, 20);
+    }
+
     private static double getAngleToZAxis(Vector3d v) {
-        return Math.toDegrees(Math.acos(v.z / Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z)));
+        return Math.toDegrees(Math.acos(v.z / getVectorLength(v)));
+    }
+
+    private static double getVectorLength(Vector3d v) {
+        return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
     }
 }

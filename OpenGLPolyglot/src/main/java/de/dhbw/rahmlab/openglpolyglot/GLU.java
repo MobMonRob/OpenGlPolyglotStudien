@@ -15,5 +15,8 @@ public class GLU {
     @CFunction("gluSphere")
     static native void sphere(Quadric quad, double radius, int slices, int stacks);
 
+    @CFunction("gluCylinder")
+    static native void cylinder(Quadric quad, double base, double top, double height, int slices, int stacks);
+
     interface Quadric extends PointerBase {}
 }
