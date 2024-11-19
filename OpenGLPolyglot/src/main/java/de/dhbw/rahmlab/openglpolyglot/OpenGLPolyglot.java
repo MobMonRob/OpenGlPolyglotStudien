@@ -4,6 +4,12 @@ import com.oracle.svm.core.c.CGlobalData;
 import com.oracle.svm.core.c.CGlobalDataFactory;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Arrow;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Circle;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Cube;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Line;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Polygon;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Sphere;
 import java.awt.Color;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
@@ -95,28 +101,28 @@ public class OpenGLPolyglot {
             GL.materialfv(GL.FRONT(), GL.DIFFUSE(), mat.addressOfArrayElement(0));
         }*/
 
-        ShapeDrawer.drawSphere(new Point3d(-2, 2, -2), 1.5f, Color.magenta);
+        new Sphere(new Point3d(-2, 2, -2), 1.5f, Color.magenta).draw();
 
-        ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2f);
-        ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2f);
-        ShapeDrawer.drawLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2f);
+        new Line(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2f).draw();
+        new Line(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2f).draw();
+        new Line(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2f).draw();
 
-        ShapeDrawer.drawArrow(new Point3d(-2, -2, -2), new Vector3d(1, 1, 1), 0.1, Color.cyan);
+        new Arrow(new Point3d(-2, -2, -2), new Vector3d(1, 1, 1), 0.1, Color.cyan).draw();
 
-        ShapeDrawer.drawCircle(new Point3d(-2, 3, 2), new Vector3d(1, 0, 0), 20, 2.0, Color.yellow, false, true);
-        ShapeDrawer.drawCircle(new Point3d(-2, 4, 3), new Vector3d(0, 1, 0), 20, 2.0, Color.red, true, false);
-        ShapeDrawer.drawCircle(new Point3d(-2, 5, 4), new Vector3d(0, -1, -1), 20, 2.0, Color.orange, false, false);
+        new Circle(new Point3d(-2, 3, 2), new Vector3d(1, 0, 0), 20, 2.0, Color.yellow, false, true).draw();
+        new Circle(new Point3d(-2, 4, 3), new Vector3d(0, 1, 0), 20, 2.0, Color.red, true, false).draw();
+        new Circle(new Point3d(-2, 5, 4), new Vector3d(0, -1, -1), 20, 2.0, Color.orange, false, false).draw();
 
-        ShapeDrawer.drawPolygon(new Point3d[] {
+        new Polygon(new Point3d[] {
             new Point3d(2, 2, 2),
             new Point3d(3, 3, 3),
             new Point3d(3, 0, 3),
             new Point3d(1, -1, 1)
-        }, Color.blue);
+        }, Color.blue).draw();
 
-        ShapeDrawer.drawCube(new Point3d(1, 0, 0), 1, new Color(0, 255, 127));
-        ShapeDrawer.drawCube(new Point3d(0, 0, 0), 1, new Color(255, 127, 0));
-        ShapeDrawer.drawCube(new Point3d(0, 0, 1), 1, new Color(127, 0, 255));
+        new Cube(new Point3d(1, 0, 0), 1, new Color(0, 255, 127)).draw();
+        new Cube(new Point3d(0, 0, 0), 1, new Color(255, 127, 0)).draw();
+        new Cube(new Point3d(0, 0, 1), 1, new Color(127, 0, 255)).draw();
 
         GL.flush();
     }
