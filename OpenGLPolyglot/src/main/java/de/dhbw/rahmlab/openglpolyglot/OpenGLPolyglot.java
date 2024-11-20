@@ -4,12 +4,6 @@ import com.oracle.svm.core.c.CGlobalData;
 import com.oracle.svm.core.c.CGlobalDataFactory;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
-import de.dhbw.rahmlab.openglpolyglot.shapes.Arrow;
-import de.dhbw.rahmlab.openglpolyglot.shapes.Circle;
-import de.dhbw.rahmlab.openglpolyglot.shapes.Cube;
-import de.dhbw.rahmlab.openglpolyglot.shapes.Line;
-import de.dhbw.rahmlab.openglpolyglot.shapes.Polygon;
-import de.dhbw.rahmlab.openglpolyglot.shapes.Sphere;
 import java.awt.Color;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
@@ -42,7 +36,11 @@ public class OpenGLPolyglot {
     private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback =
         CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape", int.class, int.class);
 
+    private static EuclidViewer3D viewer;
+
     public static void main(String[] args) {
+        IsolateSingleton.initialize();
+        addExampleShapes();
         scale.get().write(1f);
         initializeWindow(args);
         setUpLightingAndMaterials();
@@ -86,8 +84,8 @@ public class OpenGLPolyglot {
     }
 
     @CEntryPoint
-    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
+    @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
+                        epilogue = CEntryPointSetup.LeaveEpilogue.class)
     private static void display() {
         var scalef = scale.get().read();
  
@@ -101,28 +99,9 @@ public class OpenGLPolyglot {
             GL.materialfv(GL.FRONT(), GL.DIFFUSE(), mat.addressOfArrayElement(0));
         }*/
 
-        new Sphere(new Point3d(-2, 2, -2), 1.5f, Color.magenta).draw();
-
-        new Line(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2f).draw();
-        new Line(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2f).draw();
-        new Line(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2f).draw();
-
-        new Arrow(new Point3d(-2, -2, -2), new Vector3d(1, 1, 1), 0.1, Color.cyan).draw();
-
-        new Circle(new Point3d(-2, 3, 2), new Vector3d(1, 0, 0), 20, 2.0, Color.yellow, false, true).draw();
-        new Circle(new Point3d(-2, 4, 3), new Vector3d(0, 1, 0), 20, 2.0, Color.red, true, false).draw();
-        new Circle(new Point3d(-2, 5, 4), new Vector3d(0, -1, -1), 20, 2.0, Color.orange, false, false).draw();
-
-        new Polygon(new Point3d[] {
-            new Point3d(2, 2, 2),
-            new Point3d(3, 3, 3),
-            new Point3d(3, 0, 3),
-            new Point3d(1, -1, 1)
-        }, Color.blue).draw();
-
-        new Cube(new Point3d(1, 0, 0), 1, new Color(0, 255, 127)).draw();
-        new Cube(new Point3d(0, 0, 0), 1, new Color(255, 127, 0)).draw();
-        new Cube(new Point3d(0, 0, 1), 1, new Color(127, 0, 255)).draw();
+        for (var shape : viewer.getNodes().values()) {
+            shape.draw();
+        }
 
         GL.flush();
     }
@@ -144,5 +123,36 @@ public class OpenGLPolyglot {
         GL.loadIdentity();
         GL.ortho(-10 * ratio, 10 * ratio, -10, 10, -10, 10);
         GL.matrixMode(GL.MODELVIEW());
+    }
+
+    @CEntryPoint
+    @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
+                        epilogue = CEntryPointSetup.LeaveEpilogue.class)
+    private static void addExampleShapes() {
+        viewer = new EuclidViewer3D();
+	viewer.open();
+
+	viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", false);
+
+	viewer.addLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2, "Line1");
+	viewer.addLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2, "Line2");
+	viewer.addLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2, "Line3");
+
+	viewer.addArrow(new Point3d(-2, -2, -2), new Vector3d(1, 1, 1), 0.1, Color.cyan, "Arrow");
+
+	viewer.addCircle(new Point3d(-2, 3, 2), new Vector3d(1, 0, 0), 2.0, Color.yellow, "Circle1", false, true);
+	viewer.addCircle(new Point3d(-2, 4, 3), new Vector3d(0, 1, 0), 2.0, Color.red, "Circle2", true, false);
+	viewer.addCircle(new Point3d(-2, 5, 4), new Vector3d(0, -1, -1), 2.0, Color.orange, "Circle3", false, false);
+
+	viewer.addPolygone(new Point3d(2, 2, 2), new Point3d[] {
+		new Point3d(2, 2, 2),
+		new Point3d(3, 3, 3),
+		new Point3d(3, 0, 3),
+		new Point3d(1, -1, 1)
+	}, Color.blue, "Polygon", false, false);
+
+	viewer.addCube(new Point3d(1, 0, 0), new Vector3d(0, 0, 0), 1, new Color(0, 255, 127), "Cube1", false);
+	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(0, 0, 0), 1, new Color(255, 127, 0), "Cube2", false);
+	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(0, 0, 0), 1, new Color(127, 0, 255), "Cube3", false);
     }
 }
