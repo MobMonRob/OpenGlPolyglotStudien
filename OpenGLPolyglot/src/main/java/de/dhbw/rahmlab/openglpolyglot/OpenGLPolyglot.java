@@ -151,8 +151,8 @@ public class OpenGLPolyglot {
 		new Point3d(1, -1, 1)
 	}, Color.blue, "Polygon", false, false);
 
-	viewer.addCube(new Point3d(1, 0, 0), new Vector3d(0, 0, 0), 1, new Color(0, 255, 127), "Cube1", false);
-	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(0, 0, 0), 1, new Color(255, 127, 0), "Cube2", false);
-	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(0, 0, 0), 1, new Color(127, 0, 255), "Cube3", false);
+	viewer.addCube(new Point3d(1, 0, 0), new Vector3d(0, 1, 1), 1, new Color(0, 255, 127), "Cube1", false);
+	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(1, 0, 1), 1, new Color(255, 127, 0), "Cube2", false);
+	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(1, 1, 1), 1, new Color(127, 0, 255), "Cube3", false);
     }
 }

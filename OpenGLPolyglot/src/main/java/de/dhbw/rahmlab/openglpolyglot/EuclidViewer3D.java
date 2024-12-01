@@ -64,7 +64,7 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     @Override
     public long addCube(Point3d location, Vector3d dir, double width, Color color, String label, boolean tranparency) {
-        return addNode(new Cube(location, width, color));
+        return addNode(new Cube(location, dir, width, color));
     }
 
     @Override
