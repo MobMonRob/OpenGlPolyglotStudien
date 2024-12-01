@@ -134,9 +134,11 @@ public class OpenGLPolyglot {
 
 	viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", false);
 
-	viewer.addLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2, "Line1");
-	viewer.addLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2, "Line2");
-	viewer.addLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2, "Line3");
+	viewer.addRasterizedLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2);
+	viewer.addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2);
+	viewer.addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2);
+        
+        viewer.addLine(new Point3d(0, -5, 5), new Point3d(5, -3, 4), Color.gray, 0.1, "Line");
 
 	viewer.addArrow(new Point3d(-2, -2, -2), new Vector3d(1, 1, 1), 0.1, Color.cyan, "Arrow");
 

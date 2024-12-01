@@ -4,20 +4,24 @@ import de.dhbw.rahmlab.openglpolyglot.GL;
 import java.awt.Color;
 import org.jogamp.vecmath.Point3d;
 
-public class Line implements Shape {
+/**
+ * A line where the width is specified in pixels, using glLineWidth and GL_LINES
+ */
+public class RasterizedLine implements Shape {
 
     private final Point3d p1;
     private final Point3d p2;
     private final Color color;
     private final float width;
 
-    public Line(Point3d p1, Point3d p2, Color color, float width) {
+    public RasterizedLine(Point3d p1, Point3d p2, Color color, float width) {
         this.p1 = p1;
         this.p2 = p2;
         this.color = color;
         this.width = width;
     }
-    
+
+    @Override
     public void draw() {
         GL.lineWidth(width);
         GL.begin(GL.LINES());

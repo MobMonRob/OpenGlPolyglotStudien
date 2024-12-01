@@ -3,7 +3,8 @@ package de.dhbw.rahmlab.openglpolyglot;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Arrow;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Circle;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Cube;
-import de.dhbw.rahmlab.openglpolyglot.shapes.Line;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Cylinder;
+import de.dhbw.rahmlab.openglpolyglot.shapes.RasterizedLine;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Polygon;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Shape;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Sphere;
@@ -44,7 +45,11 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     @Override
     public long addLine(Point3d p1, Point3d p2, Color color, double radius, String label) {
-        return addNode(new Line(p1, p2, color, (float) radius));
+        return addNode(new Cylinder(p1, p2, color, radius));
+    }
+
+    public long addRasterizedLine(Point3d p1, Point3d p2, Color color, float width) {
+        return addNode(new RasterizedLine(p1, p2, color, width));
     }
 
     @Override
