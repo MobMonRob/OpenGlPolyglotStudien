@@ -11,14 +11,17 @@ public class Cube implements Shape {
     private final Vector3d direction;
     private final double width;
     private final Color color;
+    private final String label;
 
-    public Cube(Point3d location, Vector3d direction, double width, Color color) {
+    public Cube(Point3d location, Vector3d direction, double width, Color color, String label) {
         this.location = location;
         this.direction = direction;
         this.width = width;
         this.color = color;
+        this.label = label;
     }
 
+    @Override
     public void draw() {
         var halfWidth = width / 2;
         var rotationAngle = ShapeDrawingUtils.getAngleToZAxis(direction);
@@ -73,6 +76,7 @@ public class Cube implements Shape {
 
         GL.end();
         GL.rotated(-rotationAngle, -direction.y, direction.x, 0);
+        ShapeDrawingUtils.drawLabel(label, new Vector3d(0, halfWidth + 0.2, 0));
         GL.translated(-location.x, -location.y, -location.z);
     }
 }

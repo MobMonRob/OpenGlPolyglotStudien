@@ -40,12 +40,12 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     @Override
     public long addSphere(Point3d location, double radius, Color color, String label, boolean transparency) {
-        return addNode(new Sphere(location, radius, color));
+        return addNode(new Sphere(location, radius, color, label));
     }
 
     @Override
     public long addLine(Point3d p1, Point3d p2, Color color, double radius, String label) {
-        return addNode(new Cylinder(p1, p2, color, radius));
+        return addNode(new Cylinder(p1, p2, color, radius, label));
     }
 
     public long addRasterizedLine(Point3d p1, Point3d p2, Color color, float width) {
@@ -54,22 +54,22 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     @Override
     public long addArrow(Point3d location, Vector3d direction, double radius, Color color, String label) {
-        return addNode(new Arrow(location, direction, radius, color));
+        return addNode(new Arrow(location, direction, radius, color, label));
     }
 
     @Override
     public long addCircle(Point3d location, Vector3d normal, double radius, Color color, String label, boolean isDashed, boolean isFilled) {
-        return addNode(new Circle(location, normal, 20, radius, color, isDashed, isFilled));
+        return addNode(new Circle(location, normal, 20, radius, color, label, isDashed, isFilled));
     }
 
     @Override
     public long addPolygone(Point3d location, Point3d[] corners, Color color, String label, boolean showNormal, boolean tranparency) {
-        return addNode(new Polygon(corners, color));
+        return addNode(new Polygon(location, corners, color, label));
     }
 
     @Override
     public long addCube(Point3d location, Vector3d dir, double width, Color color, String label, boolean tranparency) {
-        return addNode(new Cube(location, dir, width, color));
+        return addNode(new Cube(location, dir, width, color, label));
     }
 
     @Override

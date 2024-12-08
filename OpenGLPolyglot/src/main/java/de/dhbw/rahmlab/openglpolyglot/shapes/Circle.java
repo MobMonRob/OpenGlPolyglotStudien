@@ -12,20 +12,23 @@ public class Circle implements Shape {
     private final int edges;
     private final double radius;
     private final Color color;
+    private final String label;
     private final boolean isDashed;
     private final boolean isFilled;
 
     public Circle(Point3d location, Vector3d normal, int edges, double radius,
-            Color color, boolean isDashed, boolean isFilled) {
+            Color color, String label, boolean isDashed, boolean isFilled) {
         this.location = location;
         this.normal = normal;
         this.edges = edges;
         this.radius = radius;
         this.color = color;
+        this.label = label;
         this.isDashed = isDashed;
         this.isFilled = isFilled;
     }
 
+    @Override
     public void draw() {
         // verschiebe Koordinatensystem, sodass Kreismittelpunkt im Ursprung ist
         GL.translated(location.x, location.y, location.z);
@@ -37,6 +40,7 @@ public class Circle implements Shape {
         GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
 
         drawCircle(isFilled, isDashed, edges, radius);
+        ShapeDrawingUtils.drawLabel(" " + label, new Vector3d(0, 0, 0.1));
 
         GL.rotated(-rotationAngle, -normal.y, normal.x, 0);
         GL.translated(-location.x, -location.y, -location.z);

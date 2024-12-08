@@ -12,12 +12,14 @@ public class Cylinder implements Shape {
     private final Point3d end;
     private final Color color;
     private final double radius;
+    private final String label;
 
-    public Cylinder(Point3d start, Point3d end, Color color, double radius) {
+    public Cylinder(Point3d start, Point3d end, Color color, double radius, String label) {
         this.start = start;
         this.end = end;
         this.color = color;
         this.radius = radius;
+        this.label = label;
     }
 
     @Override
@@ -38,7 +40,10 @@ public class Cylinder implements Shape {
         GL.translated(0, 0, height);
         Circle.drawCircle(true, false, 20, radius);     // Kreisfläche bei 'end'
 
-        GL.translated(0, 0, -height);
+        GL.translated(0, 0, -height/2);
+        ShapeDrawingUtils.drawLabel(" " + label);
+
+        GL.translated(0, 0, -height/2);
         GL.rotated(-rotationAngle, -direction.y, direction.x, 0);
         GL.translated(-start.x, -start.y, -start.z);
     }

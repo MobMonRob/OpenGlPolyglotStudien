@@ -145,4 +145,7 @@ public class GL {
 
     @CFunction("glLineWidth")
     public static native void lineWidth(float width);
+
+    @CFunction("glRasterPos3d")
+    public static native void rasterPos3d(double x, double y, double z);
 }

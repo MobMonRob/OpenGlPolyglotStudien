@@ -12,6 +12,6 @@ public final class Directives implements CContext.Directives {
 
     @Override
     public List<String> getLibraries() {
-        return Arrays.asList("GL", "GLU", "glut");
+        return Arrays.asList("GL", "GLU", "glut", "OpenGLPolyglotHelper");
     }
 }

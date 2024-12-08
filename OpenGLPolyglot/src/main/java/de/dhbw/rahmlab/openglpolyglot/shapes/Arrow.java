@@ -11,14 +11,17 @@ public class Arrow implements Shape {
     private final Vector3d direction;
     private final double radius;
     private final Color color;
+    private final String label;
 
-    public Arrow(Point3d location, Vector3d direction, double radius, Color color) {
+    public Arrow(Point3d location, Vector3d direction, double radius, Color color, String label) {
         this.location = location;
         this.direction = direction;
         this.radius = radius;
         this.color = color;
+        this.label = label;
     }
-    
+
+    @Override
     public void draw() {
         // verschiebe Koordinatensystem, sodass location im Ursprung ist
         GL.translated(location.x, location.y, location.z);
@@ -38,7 +41,10 @@ public class Arrow implements Shape {
         ShapeDrawingUtils.drawCone(coneRadius, coneHeight);
         Circle.drawCircle(true, false, 20, coneRadius);
 
-        GL.translated(0, 0, -cylinderHeight);
+        GL.translated(0, 0, -cylinderHeight/2);
+        ShapeDrawingUtils.drawLabel(" " + label);
+
+        GL.translated(0, 0, -cylinderHeight/2);
         GL.rotated(-rotationAngle, -direction.y, direction.x, 0);
         GL.translated(-location.x, -location.y, -location.z);
     }

@@ -5,9 +5,12 @@ import org.graalvm.nativeimage.c.constant.CConstant;
 import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.nativeimage.c.function.CFunctionPointer;
 import org.graalvm.nativeimage.c.function.InvokeCFunctionPointer;
+import org.graalvm.nativeimage.c.struct.CFieldAddress;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CCharPointerPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
+import org.graalvm.nativeimage.c.type.VoidPointer;
+import org.graalvm.word.PointerBase;
 
 @CContext(Directives.class)
 public class GLUT {
@@ -115,6 +118,9 @@ public class GLUT {
 
     @CFunction("glutPassiveMotionFunc")
     public static native void passiveMotionFunc(Callback2i callback);
+
+    @CFunction("glutBitmapCharacter")
+    public static native void bitmapCharacter(VoidPointer font, int character);
 
     interface Callback extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke();
