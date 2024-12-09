@@ -35,6 +35,15 @@ public class GL {
     @CConstant("GL_DEPTH_TEST")
     public static native int DEPTH_TEST();
 
+    @CConstant("GL_BLEND")
+    public static native int BLEND();
+
+    @CConstant("GL_SRC_ALPHA")
+    public static native int SRC_ALPHA();
+
+    @CConstant("GL_ONE_MINUS_SRC_ALPHA")
+    public static native int ONE_MINUS_SRC_ALPHA();
+
     @CConstant("GL_COLOR_BUFFER_BIT")
     public static native int COLOR_BUFFER_BIT();
 
@@ -76,6 +85,12 @@ public class GL {
 
     @CFunction("glColor3ub")
     public static native void color3ub(@CUnsigned int red, @CUnsigned int green, @CUnsigned int blue);
+
+    @CFunction("glColor4f")
+    public static native void color4f(float red, float green, float blue, float alpha);
+
+    @CFunction("glColor4ub")
+    public static native void color4ub(@CUnsigned int red, @CUnsigned int green, @CUnsigned int blue, @CUnsigned int alpha);
 
     @CFunction("glShadeModel")
     public static native void shadeModel(int mode);
@@ -148,4 +163,7 @@ public class GL {
 
     @CFunction("glRasterPos3d")
     public static native void rasterPos3d(double x, double y, double z);
+    
+    @CFunction("glBlendFunc")
+    public static native void blendFunc(int sfactor, int dfactor);
 }

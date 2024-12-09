@@ -12,13 +12,15 @@ public class Cube implements Shape {
     private final double width;
     private final Color color;
     private final String label;
+    private final boolean transparency;
 
-    public Cube(Point3d location, Vector3d direction, double width, Color color, String label) {
+    public Cube(Point3d location, Vector3d direction, double width, Color color, String label, boolean transparency) {
         this.location = location;
         this.direction = direction;
         this.width = width;
         this.color = color;
         this.label = label;
+        this.transparency = transparency;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class Cube implements Shape {
 
         GL.begin(GL.QUADS());
         // TODO: remove fake lighting when real lighting is implemented
-        GL.color3f(color.getRed()/255f * 0.9f, color.getGreen()/255f * 0.9f, color.getBlue()/255f * 0.9f);
+        GL.color4f(color.getRed()/255f * 0.9f, color.getGreen()/255f * 0.9f, color.getBlue()/255f * 0.9f, transparency ? 0.5f : color.getAlpha());
 
         // vorne
         GL.vertex3d(-halfWidth, +halfWidth, +halfWidth);
@@ -45,7 +47,7 @@ public class Cube implements Shape {
         GL.vertex3d(+halfWidth, -halfWidth, -halfWidth);
         GL.vertex3d(+halfWidth, +halfWidth, -halfWidth);
 
-        GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
+        GL.color4ub(color.getRed(), color.getGreen(), color.getBlue(), transparency ? 127 : color.getAlpha());
 
         // oben
         GL.vertex3d(-halfWidth, +halfWidth, -halfWidth);
@@ -60,7 +62,7 @@ public class Cube implements Shape {
         GL.vertex3d(+halfWidth, -halfWidth, -halfWidth);
 
         // TODO: remove fake lighting when real lighting is implemented
-        GL.color3f(color.getRed()/255f * 0.8f, color.getGreen()/255f * 0.8f, color.getBlue()/255f * 0.8f);
+        GL.color4f(color.getRed()/255f * 0.8f, color.getGreen()/255f * 0.8f, color.getBlue()/255f * 0.8f, transparency ? 0.5f : color.getAlpha());
 
         // rechts
         GL.vertex3d(+halfWidth, +halfWidth, +halfWidth);
@@ -78,5 +80,10 @@ public class Cube implements Shape {
         GL.rotated(-rotationAngle, -direction.y, direction.x, 0);
         ShapeDrawingUtils.drawLabel(label, new Vector3d(0, halfWidth + 0.2, 0));
         GL.translated(-location.x, -location.y, -location.z);
+    }
+
+    @Override
+    public boolean isTransparent() {
+        return transparency;
     }
 }

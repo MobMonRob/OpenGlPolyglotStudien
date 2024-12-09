@@ -47,4 +47,9 @@ public class Cylinder implements Shape {
         GL.rotated(-rotationAngle, -direction.y, direction.x, 0);
         GL.translated(-start.x, -start.y, -start.z);
     }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
 }

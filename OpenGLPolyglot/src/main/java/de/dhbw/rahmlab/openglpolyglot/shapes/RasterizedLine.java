@@ -31,4 +31,9 @@ public class RasterizedLine implements Shape {
         GL.end();
         GL.lineWidth(1f);
     }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
 }

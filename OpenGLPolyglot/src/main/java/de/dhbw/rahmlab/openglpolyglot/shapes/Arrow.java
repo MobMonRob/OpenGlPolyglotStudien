@@ -48,4 +48,9 @@ public class Arrow implements Shape {
         GL.rotated(-rotationAngle, -direction.y, direction.x, 0);
         GL.translated(-location.x, -location.y, -location.z);
     }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
 }

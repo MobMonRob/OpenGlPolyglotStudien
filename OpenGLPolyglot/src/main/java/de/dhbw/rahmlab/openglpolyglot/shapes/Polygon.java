@@ -12,18 +12,20 @@ public class Polygon implements Shape {
     private final Point3d[] corners;
     private final Color color;
     private final String label;
+    private final boolean transparency;
 
-    public Polygon(Point3d location, Point3d[] corners, Color color, String label) {
+    public Polygon(Point3d location, Point3d[] corners, Color color, String label, boolean transparency) {
         this.location = location;
         this.corners = corners;
         this.color = color;
         this.label = label;
+        this.transparency = transparency;
     }
 
     @Override
     public void draw() {
         GL.begin(GL.POLYGON());
-        GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
+        GL.color4ub(color.getRed(), color.getGreen(), color.getBlue(), transparency ? 127 : color.getAlpha());
 
         for (var corner : corners) {
             GL.vertex3d(corner.x, corner.y, corner.z);
@@ -31,5 +33,10 @@ public class Polygon implements Shape {
 
         GL.end();
         ShapeDrawingUtils.drawLabel(label, new Vector3d(location.x, location.y, location.z));
+    }
+
+    @Override
+    public boolean isTransparent() {
+        return transparency;
     }
 }

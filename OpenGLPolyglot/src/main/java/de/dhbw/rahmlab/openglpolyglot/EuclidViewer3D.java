@@ -40,7 +40,7 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     @Override
     public long addSphere(Point3d location, double radius, Color color, String label, boolean transparency) {
-        return addNode(new Sphere(location, radius, color, label));
+        return addNode(new Sphere(location, radius, color, label, transparency));
     }
 
     @Override
@@ -64,12 +64,12 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     @Override
     public long addPolygone(Point3d location, Point3d[] corners, Color color, String label, boolean showNormal, boolean tranparency) {
-        return addNode(new Polygon(location, corners, color, label));
+        return addNode(new Polygon(location, corners, color, label, tranparency));
     }
 
     @Override
     public long addCube(Point3d location, Vector3d dir, double width, Color color, String label, boolean tranparency) {
-        return addNode(new Cube(location, dir, width, color, label));
+        return addNode(new Cube(location, dir, width, color, label, tranparency));
     }
 
     @Override

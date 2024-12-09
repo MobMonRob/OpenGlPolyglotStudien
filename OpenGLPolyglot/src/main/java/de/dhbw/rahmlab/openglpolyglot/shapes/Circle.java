@@ -65,4 +65,9 @@ public class Circle implements Shape {
 
         GL.end();
     }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
 }

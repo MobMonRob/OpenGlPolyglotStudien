@@ -4,6 +4,7 @@ import com.oracle.svm.core.c.CGlobalData;
 import com.oracle.svm.core.c.CGlobalDataFactory;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Shape;
 import java.awt.Color;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
@@ -81,6 +82,9 @@ public class OpenGLPolyglot {
         GL.enable(GL.LIGHTING());
         GL.enable(GL.LIGHT0());*/
         GL.enable(GL.DEPTH_TEST());
+
+        GL.blendFunc(GL.SRC_ALPHA(), GL.ONE_MINUS_SRC_ALPHA());
+        GL.enable(GL.BLEND());
     }
 
     @CEntryPoint
@@ -99,9 +103,7 @@ public class OpenGLPolyglot {
             GL.materialfv(GL.FRONT(), GL.DIFFUSE(), mat.addressOfArrayElement(0));
         }*/
 
-        for (var shape : viewer.getNodes().values()) {
-            shape.draw();
-        }
+        Shape.drawAll(viewer.getNodes().values());
 
         GL.flush();
     }
@@ -132,7 +134,7 @@ public class OpenGLPolyglot {
         viewer = new EuclidViewer3D();
 	viewer.open();
 
-	viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", false);
+	viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", true);
 
 	viewer.addRasterizedLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2);
 	viewer.addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2);
@@ -151,10 +153,10 @@ public class OpenGLPolyglot {
 		new Point3d(3, 3, 3),
 		new Point3d(3, 0, 3),
 		new Point3d(1, -1, 1)
-	}, Color.blue, "Polygon", false, false);
+	}, Color.blue, "Polygon", false, true);
 
 	viewer.addCube(new Point3d(1, 0, 0), new Vector3d(0, 1, 1), 1, new Color(0, 255, 127), "Cube1", false);
-	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(1, 0, 1), 1, new Color(255, 127, 0), "Cube2", false);
+	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(1, 0, 1), 1, new Color(255, 127, 0), "Cube2", true);
 	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(1, 1, 1), 1, new Color(127, 0, 255), "Cube3", false);
     }
 }

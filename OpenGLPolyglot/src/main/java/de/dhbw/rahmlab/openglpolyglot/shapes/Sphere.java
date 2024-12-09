@@ -12,20 +12,27 @@ public class Sphere implements Shape {
     private final double radius;
     private final Color color;
     private final String label;
+    private final boolean transparency;
 
-    public Sphere(Point3d location, double radius, Color color, String label) {
+    public Sphere(Point3d location, double radius, Color color, String label, boolean transparency) {
         this.location = location;
         this.radius = radius;
         this.color = color;
         this.label = label;
+        this.transparency = transparency;
     }
 
     @Override
     public void draw() {
-        GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
+        GL.color4ub(color.getRed(), color.getGreen(), color.getBlue(), transparency ? 127 : color.getAlpha());
         GL.translated(location.x, location.y, location.z);
         GLU.sphere(GLU.newQuadric(), radius, 100, 20);
         ShapeDrawingUtils.drawLabel(label, new Vector3d(0, radius + 0.1, 0));
         GL.translated(-location.x, -location.y, -location.z);
+    }
+
+    @Override
+    public boolean isTransparent() {
+        return transparency;
     }
 }
