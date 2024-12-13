@@ -12,25 +12,28 @@ import de.orat.view3d.euclid3dviewapi.spi.iAABB;
 import de.orat.view3d.euclid3dviewapi.spi.iEuclidViewer3D;
 import java.awt.Color;
 import java.util.HashMap;
+import org.graalvm.nativeimage.c.CContext;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
+@CContext(Directives.class)
 public class EuclidViewer3D implements iEuclidViewer3D {
 
-    private HashMap<Long, Shape> nodes;
-    private long nodesCount;
+    private HashMap<Long, Shape> nodes = new HashMap<>();
+    private long nodesCount = 0L;
 
     @Override
     public void open() {
-        nodes = new HashMap<>();
-        nodesCount = 0L;
+        addCoordinateAxes();
+        OpenGLPolyglot.initialize();
     }
 
     @Override
     public void close() {
         nodes.clear();
         nodesCount = 0L;
+        // TODO: close window
     }
 
     @Override
@@ -96,5 +99,11 @@ public class EuclidViewer3D implements iEuclidViewer3D {
     private long addNode(Shape shape) {
         nodes.put(++nodesCount, shape);
         return nodesCount;
+    }
+
+    private void addCoordinateAxes() {
+        addRasterizedLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2);
+	addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2);
+	addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2);
     }
 }

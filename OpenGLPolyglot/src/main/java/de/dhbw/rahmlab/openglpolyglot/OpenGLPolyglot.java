@@ -5,7 +5,7 @@ import com.oracle.svm.core.c.CGlobalDataFactory;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Shape;
-import java.awt.Color;
+import de.orat.view3d.euclid3dviewapi.api.ViewerService;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
@@ -13,9 +13,6 @@ import org.graalvm.nativeimage.c.function.CEntryPointLiteral;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
-import org.jogamp.vecmath.Matrix4d;
-import org.jogamp.vecmath.Point3d;
-import org.jogamp.vecmath.Vector3d;
 
 @CContext(Directives.class)
 public class OpenGLPolyglot {
@@ -38,13 +35,15 @@ public class OpenGLPolyglot {
     private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback =
         CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape", int.class, int.class);
 
-    private static EuclidViewer3D viewer;
+    public static EuclidViewer3D viewer;
 
-    public static void main(String[] args) {
-        IsolateSingleton.initialize();
-        addExampleShapes();
+    @CEntryPoint
+    @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
+                        epilogue = CEntryPointSetup.LeaveEpilogue.class)
+    public static void initialize() {
+        viewer = (EuclidViewer3D) ViewerService.getInstance().getViewer().get();
         scale.get().write(1f);
-        initializeWindow(args);
+        initializeWindow();
         setUpLightingAndMaterials();
 
         GLUT.displayFunc(displayCallback.getFunctionPointer());
@@ -55,10 +54,10 @@ public class OpenGLPolyglot {
         GLUT.mainLoop();
     }
 
-    private static void initializeWindow(String[] args) {
-        try (var argv = CTypeConversion.toCStrings(args)) {
+    private static void initializeWindow() {
+        try (var argv = CTypeConversion.toCStrings(new String[0])) {
             var argc = StackValue.get(CIntPointer.class);
-            argc.write(args.length);
+            argc.write(0);
             GLUT.init(argc, argv.get());
         }
 
@@ -106,13 +105,6 @@ public class OpenGLPolyglot {
 
         Shape.drawAll(viewer.getNodes().values());
 
-        viewer.getNodes().get(11L).transform(new Matrix4d(
-            1.0, 0.0, 0.0, 0.01,
-            0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0
-        ));
-
         GL.flush();
     }
 
@@ -133,38 +125,5 @@ public class OpenGLPolyglot {
         GL.loadIdentity();
         GL.ortho(-10 * ratio, 10 * ratio, -10, 10, -10, 10);
         GL.matrixMode(GL.MODELVIEW());
-    }
-
-    @CEntryPoint
-    @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
-                        epilogue = CEntryPointSetup.LeaveEpilogue.class)
-    private static void addExampleShapes() {
-        viewer = new EuclidViewer3D();
-	viewer.open();
-
-	viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", true);
-
-	viewer.addRasterizedLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2);
-	viewer.addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2);
-	viewer.addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2);
-        
-        viewer.addLine(new Point3d(0, -5, 5), new Point3d(5, -3, 4), Color.gray, 0.1, "Line");
-
-	viewer.addArrow(new Point3d(-2, -2, -2), new Vector3d(1, 1, 1), 0.1, Color.cyan, "Arrow");
-
-	viewer.addCircle(new Point3d(-2, 3, 2), new Vector3d(1, 0, 0), 2.0, Color.yellow, "Circle1", false, true);
-	viewer.addCircle(new Point3d(-2, 4, 3), new Vector3d(0, 1, 0), 2.0, Color.red, "Circle2", true, false);
-	viewer.addCircle(new Point3d(-2, 5, 4), new Vector3d(0, -1, -1), 2.0, Color.orange, "Circle3", false, false);
-
-	viewer.addPolygone(new Point3d(2, 2, 2), new Point3d[] {
-		new Point3d(2, 2, 2),
-		new Point3d(3, 3, 3),
-		new Point3d(3, 0, 3),
-		new Point3d(1, -1, 1)
-	}, Color.blue, "Polygon", false, true);
-
-	viewer.addCube(new Point3d(1, 0, 0), new Vector3d(0, 1, 1), 1, new Color(0, 255, 127), "Cube1", false);
-	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(1, 0, 1), 1, new Color(255, 127, 0), "Cube2", true);
-	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(1, 1, 1), 1, new Color(127, 0, 255), "Cube3", false);
     }
 }

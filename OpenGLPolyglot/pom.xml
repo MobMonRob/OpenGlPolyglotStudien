@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>23</maven.compiler.release>
-        <exec.mainClass>de.dhbw.rahmlab.openglpolyglot.OpenGLPolyglot</exec.mainClass>
+        <exec.mainClass>de.dhbw.rahmlab.openglpolyglot.Main</exec.mainClass>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.graalvm.sdk/graal-sdk -->
@@ -46,7 +46,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.dhbw.rahmlab.openglpolyglot.OpenGLPolyglot</mainClass>
+                            <mainClass>de.dhbw.rahmlab.openglpolyglot.Main</mainClass>
                             <addClasspath>true</addClasspath>
                         </manifest>
                     </archive>
