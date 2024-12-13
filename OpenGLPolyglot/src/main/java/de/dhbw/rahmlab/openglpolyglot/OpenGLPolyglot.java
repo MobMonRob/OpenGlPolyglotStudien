@@ -13,6 +13,7 @@ import org.graalvm.nativeimage.c.function.CEntryPointLiteral;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
+import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
@@ -104,6 +105,13 @@ public class OpenGLPolyglot {
         }*/
 
         Shape.drawAll(viewer.getNodes().values());
+
+        viewer.getNodes().get(11L).transform(new Matrix4d(
+            1.0, 0.0, 0.0, 0.01,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0
+        ));
 
         GL.flush();
     }

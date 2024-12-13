@@ -2,6 +2,7 @@ package de.dhbw.rahmlab.openglpolyglot.shapes;
 
 import de.dhbw.rahmlab.openglpolyglot.GL;
 import java.awt.Color;
+import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
@@ -52,5 +53,11 @@ public class Arrow implements Shape {
     @Override
     public boolean isTransparent() {
         return false;
+    }
+
+    @Override
+    public void transform(Matrix4d transformMatrix) {
+        transformMatrix.transform(location);
+        transformMatrix.transform(direction);
     }
 }

@@ -2,6 +2,7 @@ package de.dhbw.rahmlab.openglpolyglot.shapes;
 
 import de.dhbw.rahmlab.openglpolyglot.GL;
 import java.awt.Color;
+import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
@@ -12,7 +13,7 @@ public class Cube implements Shape {
     private final double width;
     private final Color color;
     private final String label;
-    private final boolean transparency;
+    private final boolean isTransparent;
 
     public Cube(Point3d location, Vector3d direction, double width, Color color, String label, boolean transparency) {
         this.location = location;
@@ -20,7 +21,7 @@ public class Cube implements Shape {
         this.width = width;
         this.color = color;
         this.label = label;
-        this.transparency = transparency;
+        this.isTransparent = transparency;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class Cube implements Shape {
 
         GL.begin(GL.QUADS());
         // TODO: remove fake lighting when real lighting is implemented
-        GL.color4f(color.getRed()/255f * 0.9f, color.getGreen()/255f * 0.9f, color.getBlue()/255f * 0.9f, transparency ? 0.5f : color.getAlpha());
+        GL.color4f(color.getRed()/255f * 0.9f, color.getGreen()/255f * 0.9f, color.getBlue()/255f * 0.9f, isTransparent ? 0.5f : color.getAlpha());
 
         // vorne
         GL.vertex3d(-halfWidth, +halfWidth, +halfWidth);
@@ -47,7 +48,7 @@ public class Cube implements Shape {
         GL.vertex3d(+halfWidth, -halfWidth, -halfWidth);
         GL.vertex3d(+halfWidth, +halfWidth, -halfWidth);
 
-        GL.color4ub(color.getRed(), color.getGreen(), color.getBlue(), transparency ? 127 : color.getAlpha());
+        GL.color4ub(color.getRed(), color.getGreen(), color.getBlue(), isTransparent ? 127 : color.getAlpha());
 
         // oben
         GL.vertex3d(-halfWidth, +halfWidth, -halfWidth);
@@ -62,7 +63,7 @@ public class Cube implements Shape {
         GL.vertex3d(+halfWidth, -halfWidth, -halfWidth);
 
         // TODO: remove fake lighting when real lighting is implemented
-        GL.color4f(color.getRed()/255f * 0.8f, color.getGreen()/255f * 0.8f, color.getBlue()/255f * 0.8f, transparency ? 0.5f : color.getAlpha());
+        GL.color4f(color.getRed()/255f * 0.8f, color.getGreen()/255f * 0.8f, color.getBlue()/255f * 0.8f, isTransparent ? 0.5f : color.getAlpha());
 
         // rechts
         GL.vertex3d(+halfWidth, +halfWidth, +halfWidth);
@@ -84,6 +85,12 @@ public class Cube implements Shape {
 
     @Override
     public boolean isTransparent() {
-        return transparency;
+        return isTransparent;
+    }
+
+    @Override
+    public void transform(Matrix4d transformMatrix) {
+        transformMatrix.transform(location);
+        transformMatrix.transform(direction);
     }
 }

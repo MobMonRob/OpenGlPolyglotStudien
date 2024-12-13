@@ -2,6 +2,7 @@ package de.dhbw.rahmlab.openglpolyglot.shapes;
 
 import de.dhbw.rahmlab.openglpolyglot.GL;
 import java.awt.Color;
+import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 
 /**
@@ -9,14 +10,14 @@ import org.jogamp.vecmath.Point3d;
  */
 public class RasterizedLine implements Shape {
 
-    private final Point3d p1;
-    private final Point3d p2;
+    private final Point3d start;
+    private final Point3d end;
     private final Color color;
     private final float width;
 
-    public RasterizedLine(Point3d p1, Point3d p2, Color color, float width) {
-        this.p1 = p1;
-        this.p2 = p2;
+    public RasterizedLine(Point3d start, Point3d end, Color color, float width) {
+        this.start = start;
+        this.end = end;
         this.color = color;
         this.width = width;
     }
@@ -26,8 +27,8 @@ public class RasterizedLine implements Shape {
         GL.lineWidth(width);
         GL.begin(GL.LINES());
         GL.color3ub(color.getRed(), color.getGreen(), color.getBlue());
-        GL.vertex3d(p1.x, p1.y, p1.z);
-        GL.vertex3d(p2.x, p2.y, p2.z);
+        GL.vertex3d(start.x, start.y, start.z);
+        GL.vertex3d(end.x, end.y, end.z);
         GL.end();
         GL.lineWidth(1f);
     }
@@ -35,5 +36,11 @@ public class RasterizedLine implements Shape {
     @Override
     public boolean isTransparent() {
         return false;
+    }
+
+    @Override
+    public void transform(Matrix4d transformMatrix) {
+        transformMatrix.transform(start);
+        transformMatrix.transform(end);
     }
 }

@@ -84,8 +84,9 @@ public class EuclidViewer3D implements iEuclidViewer3D {
     }
 
     @Override
-    public void transform(long handle, Matrix4d transform) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void transform(long handle, Matrix4d transformMatrix) {
+        var node = nodes.get(handle);
+        node.transform(transformMatrix);
     }
 
     public HashMap<Long, Shape> getNodes() {
