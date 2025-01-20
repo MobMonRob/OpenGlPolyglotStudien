@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>package</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
+        </goals>
+        <properties>
+            <exec.vmArgs></exec.vmArgs>
+            <exec.args></exec.args>
+            <exec.appArgs></exec.appArgs>
+            <exec.mainClass>de.dhbw.rahmlab.openglpolyglot.Main</exec.mainClass>
+            <exec.executable>./target/OpenGLPolyglot</exec.executable>
+        </properties>
+    </action>
+</actions>
