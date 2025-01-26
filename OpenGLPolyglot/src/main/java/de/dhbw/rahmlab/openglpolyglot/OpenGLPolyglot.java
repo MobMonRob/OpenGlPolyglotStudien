@@ -6,10 +6,12 @@ import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Shape;
 import de.orat.view3d.euclid3dviewapi.api.ViewerService;
+import org.graalvm.nativeimage.PinnedObject;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.function.CEntryPointLiteral;
+import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
@@ -26,6 +28,9 @@ public class OpenGLPolyglot {
     public static final CGlobalData<CFloatPointer> scale =
         CGlobalDataFactory.createBytes(() -> 4);
 
+    public static final CGlobalData<CCharPointer> pixelMap =
+        CGlobalDataFactory.createBytes(() -> 800*800*3);
+
     private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
         CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
     
@@ -37,9 +42,6 @@ public class OpenGLPolyglot {
 
     public static EuclidViewer3D viewer;
 
-    @CEntryPoint
-    @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
-                        epilogue = CEntryPointSetup.LeaveEpilogue.class)
     public static void initialize() {
         viewer = (EuclidViewer3D) ViewerService.getInstance().getViewer().get();
         scale.get().write(1f);
@@ -106,6 +108,7 @@ public class OpenGLPolyglot {
         Shape.drawAll(viewer.getNodes().values());
 
         GL.flush();
+        updatePixelMap();
     }
 
     @CEntryPoint
@@ -125,5 +128,14 @@ public class OpenGLPolyglot {
         GL.loadIdentity();
         GL.ortho(-10 * ratio, 10 * ratio, -10, 10, -10, 10);
         GL.matrixMode(GL.MODELVIEW());
+    }
+
+    private static void updatePixelMap() {
+        try (var updatedPixelMap = PinnedObject.create(new byte[800*800*3])) {
+            GL.readPixels(0, 0, 800, 800, GL.RGB(), GL.UNSIGNED_BYTE(), updatedPixelMap.addressOfArrayElement(0));
+            for (int i = 0; i < 800*800*3; i++) {
+                pixelMap.get().write(i, ((CCharPointer) updatedPixelMap.addressOfArrayElement(i)).read());
+            }
+        }
     }
 }

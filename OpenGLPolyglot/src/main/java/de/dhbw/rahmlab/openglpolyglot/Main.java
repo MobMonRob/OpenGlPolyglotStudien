@@ -2,9 +2,11 @@ package de.dhbw.rahmlab.openglpolyglot;
 
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
+import de.dhbw.rahmlab.openglpolyglot.swing.ImagePanel;
 import de.orat.view3d.euclid3dviewapi.api.ViewerService;
 import de.orat.view3d.euclid3dviewapi.spi.iEuclidViewer3D;
 import java.awt.Color;
+import javax.swing.JFrame;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.jogamp.vecmath.Point3d;
@@ -13,22 +15,53 @@ import org.jogamp.vecmath.Vector3d;
 @CContext(Directives.class)
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         IsolateSingleton.initialize();
+        new Thread(Main::initializeSwingFrame).start();
         init();
+    }
+
+    private static void initializeSwingFrame() {
+        var frame = new JFrame("OpenGLPolyglot");
+        frame.setSize(800, 800);
+        frame.getContentPane().setBackground(Color.WHITE);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        var imagePanel = new ImagePanel();
+        frame.add(imagePanel);
+        frame.setVisible(true);
+        
+        while (frame.isVisible()) {
+            imagePanel.setPixels(getPixelMap());
+        }
+    }
+
+    private static int[] getPixelMap() {
+        var pixelMap = new int[800*800*3];
+
+        for (int i = 0; i < pixelMap.length; i++) {
+            pixelMap[i] = OpenGLPolyglot.pixelMap.get().read(i);
+        }
+
+        return pixelMap;
     }
 
     @CEntryPoint
     @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
                         epilogue = CEntryPointSetup.LeaveEpilogue.class)
-    public static void init() throws Exception {
+    public static void init() {
         var viewerService = ViewerService.getInstance();
         var viewer = viewerService.getViewer().get();
         addExampleShapes(viewer);
-        viewer.open();
+        
+        try {
+            viewer.open();
+        } catch (Exception exception) {
+            System.err.println("Could not initialize viewer! " + exception.getMessage());
+        }
     }
 
-    private static void addExampleShapes(iEuclidViewer3D viewer) throws Exception {
+    private static void addExampleShapes(iEuclidViewer3D viewer) {
 	viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", true);
 
         viewer.addLine(new Point3d(0, -5, 5), new Point3d(5, -3, 4), Color.gray, 0.1, "Line");

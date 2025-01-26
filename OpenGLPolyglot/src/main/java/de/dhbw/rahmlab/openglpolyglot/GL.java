@@ -5,6 +5,7 @@ import org.graalvm.nativeimage.c.constant.CConstant;
 import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CUnsigned;
+import org.graalvm.word.PointerBase;
 
 @CContext(Directives.class)
 public class GL {
@@ -70,6 +71,15 @@ public class GL {
 
     @CConstant("GL_POLYGON")
     public static native int POLYGON();
+
+    @CConstant("GL_INT")
+    public static native int INT();
+
+    @CConstant("GL_UNSIGNED_BYTE")
+    public static native int UNSIGNED_BYTE();
+
+    @CConstant("GL_RGB")
+    public static native int RGB();
 
     @CFunction("glClearColor")
     public static native void clearColor(float red, float green, float blue, float alpha);
@@ -166,4 +176,7 @@ public class GL {
     
     @CFunction("glBlendFunc")
     public static native void blendFunc(int sfactor, int dfactor);
+
+    @CFunction("glReadPixels")
+    public static native void readPixels(int x, int y, int width, int height, int format, int type, PointerBase data);
 }
