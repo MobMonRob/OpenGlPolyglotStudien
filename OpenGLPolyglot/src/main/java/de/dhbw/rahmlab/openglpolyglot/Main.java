@@ -23,27 +23,24 @@ public class Main {
 
     private static void initializeSwingFrame() {
         var frame = new JFrame("OpenGLPolyglot");
-        frame.setSize(800, 800);
+        frame.setSize(OpenGLPolyglot.INITIAL_WIDTH, OpenGLPolyglot.INITIAL_HEIGHT);
         frame.getContentPane().setBackground(Color.WHITE);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         var imagePanel = new ImagePanel();
         frame.add(imagePanel);
         frame.setVisible(true);
-        
+
         while (frame.isVisible()) {
-            imagePanel.setPixels(getPixelMap());
+            try {
+                imagePanel.updatePixels();
+                OpenGLPolyglot.width.get().write(frame.getWidth());
+                OpenGLPolyglot.height.get().write(frame.getHeight());
+                Thread.sleep(10);
+            } catch (Exception exception) {
+                System.err.println("Exception in UI loop: " + exception.getMessage());
+            }
         }
-    }
-
-    private static int[] getPixelMap() {
-        var pixelMap = new int[800*800*3];
-
-        for (int i = 0; i < pixelMap.length; i++) {
-            pixelMap[i] = OpenGLPolyglot.pixelMap.get().read(i);
-        }
-
-        return pixelMap;
     }
 
     @CEntryPoint

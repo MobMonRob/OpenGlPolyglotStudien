@@ -18,6 +18,11 @@ import org.graalvm.nativeimage.c.type.CTypeConversion;
 
 @CContext(Directives.class)
 public class OpenGLPolyglot {
+    
+    public static final int INITIAL_WIDTH = 800;
+    public static final int INITIAL_HEIGHT = 800;
+    private static int latestWidth = INITIAL_WIDTH;
+    private static int latestHeight = INITIAL_HEIGHT;
 
     public static final CGlobalData<CFloatPointer> xRotation =
         CGlobalDataFactory.createBytes(() -> 4);
@@ -28,15 +33,21 @@ public class OpenGLPolyglot {
     public static final CGlobalData<CFloatPointer> scale =
         CGlobalDataFactory.createBytes(() -> 4);
 
+    public static final CGlobalData<CIntPointer> width =
+        CGlobalDataFactory.createBytes(() -> 4);
+
+    public static final CGlobalData<CIntPointer> height =
+        CGlobalDataFactory.createBytes(() -> 4);
+
     public static final CGlobalData<CCharPointer> pixelMap =
-        CGlobalDataFactory.createBytes(() -> 800*800*3);
+        CGlobalDataFactory.createBytes(() -> 3840 * 2160 * 4); // max resolution (4k) * 4 components (RGBA)
 
     private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
         CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
-    
+
     private static final CEntryPointLiteral<GLUT.Callback> idleCallback =
         CEntryPointLiteral.create(OpenGLPolyglot.class, "idle");
-    
+
     private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback =
         CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape", int.class, int.class);
 
@@ -63,9 +74,12 @@ public class OpenGLPolyglot {
             GLUT.init(argc, argv.get());
         }
 
+        width.get().write(INITIAL_WIDTH);
+        height.get().write(INITIAL_HEIGHT);
+
         GLUT.initDisplayMode(GLUT.SINGLE() | GLUT.RGB() | GLUT.DEPTH());
         GLUT.initWindowPosition(15, 15);
-        GLUT.initWindowSize(800, 800);
+        GLUT.initWindowSize(INITIAL_WIDTH, INITIAL_HEIGHT);
         try (var title = CTypeConversion.toCString("GraalVM OpenGL")) {
             GLUT.createWindow(title.get());
         }
@@ -108,13 +122,23 @@ public class OpenGLPolyglot {
         Shape.drawAll(viewer.getNodes().values());
 
         GL.flush();
-        updatePixelMap();
     }
 
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
                         epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void idle() {
+
+        var currentWidth = width.get().read();
+        var currentHeight = height.get().read();
+
+        if (currentWidth != latestWidth || currentHeight != latestHeight) {
+            GLUT.reshapeWindow(currentWidth, currentHeight);
+            latestWidth = currentWidth;
+            latestHeight = currentHeight;
+        }
+
+        updatePixelMap(currentWidth, currentHeight);
         GLUT.postRedisplay();
     }
 
@@ -130,10 +154,11 @@ public class OpenGLPolyglot {
         GL.matrixMode(GL.MODELVIEW());
     }
 
-    private static void updatePixelMap() {
-        try (var updatedPixelMap = PinnedObject.create(new byte[800*800*3])) {
-            GL.readPixels(0, 0, 800, 800, GL.RGB(), GL.UNSIGNED_BYTE(), updatedPixelMap.addressOfArrayElement(0));
-            for (int i = 0; i < 800*800*3; i++) {
+    private static void updatePixelMap(int width, int height) {
+        var mapSize = width * height * 4;
+        try (var updatedPixelMap = PinnedObject.create(new byte[mapSize])) {
+            GL.readPixels(0, 0, width, height, GL.RGBA(), GL.UNSIGNED_BYTE(), updatedPixelMap.addressOfArrayElement(0));
+            for (int i = 0; i < mapSize; i++) {
                 pixelMap.get().write(i, ((CCharPointer) updatedPixelMap.addressOfArrayElement(i)).read());
             }
         }

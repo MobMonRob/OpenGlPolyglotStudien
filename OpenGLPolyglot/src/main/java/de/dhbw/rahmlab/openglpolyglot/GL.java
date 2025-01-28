@@ -81,6 +81,9 @@ public class GL {
     @CConstant("GL_RGB")
     public static native int RGB();
 
+    @CConstant("GL_RGBA")
+    public static native int RGBA();
+
     @CFunction("glClearColor")
     public static native void clearColor(float red, float green, float blue, float alpha);
 

@@ -120,6 +120,9 @@ public class GLUT {
     @CFunction("glutBitmapCharacter")
     public static native void bitmapCharacter(VoidPointer font, int character);
 
+    @CFunction("glutReshapeWindow")
+    public static native void reshapeWindow(int width, int height);
+
     interface Callback extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke();
     }
