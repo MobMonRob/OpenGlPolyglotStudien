@@ -75,6 +75,7 @@
                           <buildArgs>
                               <argument>-H:ConfigurationFileDirectories=config</argument>
                               <argument>-Djava.awt.headless=false</argument>
+                              <argument>-Dsun.awt.enableExtraMouseButtons=false</argument>
                               <argument>--add-exports=org.graalvm.nativeimage.builder/com.oracle.svm.core.c=ALL-UNNAMED</argument>
                               <argument>--add-exports=org.graalvm.nativeimage.builder/com.oracle.svm.core.c.function=ALL-UNNAMED</argument>
                           </buildArgs>

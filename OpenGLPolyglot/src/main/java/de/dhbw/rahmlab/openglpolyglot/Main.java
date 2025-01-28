@@ -2,10 +2,14 @@ package de.dhbw.rahmlab.openglpolyglot;
 
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
+import de.dhbw.rahmlab.openglpolyglot.Mouse;
 import de.dhbw.rahmlab.openglpolyglot.swing.ImagePanel;
 import de.orat.view3d.euclid3dviewapi.api.ViewerService;
 import de.orat.view3d.euclid3dviewapi.spi.iEuclidViewer3D;
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import javax.swing.JFrame;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
@@ -28,6 +32,26 @@ public class Main {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         var imagePanel = new ImagePanel();
+        imagePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Mouse.mouseX.get().write(e.getX());
+                Mouse.mouseY.get().write(e.getY());
+            }
+        });
+        imagePanel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Mouse.onMouseMotion(e.getX(), e.getY());
+            }
+        });
+        imagePanel.addMouseWheelListener(new MouseAdapter() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                var scalePtr = OpenGLPolyglot.scale.get();
+                scalePtr.write(scalePtr.read() * (-0.1f*e.getWheelRotation() + 1f));
+            }
+        });
         frame.add(imagePanel);
         frame.setVisible(true);
 

@@ -1,6 +1,9 @@
 {
   "reflection": [
     {
+      "type": "de.dhbw.rahmlab.openglpolyglot.swing.ImagePanel"
+    },
+    {
       "type": "java.awt.SequencedEvent"
     },
     {

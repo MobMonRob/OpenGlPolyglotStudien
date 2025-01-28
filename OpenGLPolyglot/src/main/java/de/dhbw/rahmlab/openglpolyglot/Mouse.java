@@ -12,10 +12,10 @@ import org.graalvm.nativeimage.c.type.CIntPointer;
 @CContext(Directives.class)
 public class Mouse {
 
-    private static final CGlobalData<CIntPointer> mouseX =
+    public static final CGlobalData<CIntPointer> mouseX =
         CGlobalDataFactory.createBytes(() -> 4);
 
-    private static final CGlobalData<CIntPointer> mouseY =
+    public static final CGlobalData<CIntPointer> mouseY =
         CGlobalDataFactory.createBytes(() -> 4);
 
     public static final CEntryPointLiteral<GLUT.Callback2i> mouseMotionCallback =
@@ -27,7 +27,7 @@ public class Mouse {
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
                         epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
-    private static void onMouseMotion(int x, int y) {
+    public static void onMouseMotion(int x, int y) {
         var xRotationPtr = OpenGLPolyglot.xRotation.get();
         var yRotationPtr = OpenGLPolyglot.yRotation.get();
         var mouseXPtr = mouseX.get();
