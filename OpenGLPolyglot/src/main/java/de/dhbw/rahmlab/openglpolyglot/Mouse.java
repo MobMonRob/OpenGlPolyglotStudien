@@ -1,5 +1,7 @@
 package de.dhbw.rahmlab.openglpolyglot;
 
+import de.dhbw.rahmlab.openglpolyglot.clibraries.Directives;
+import de.dhbw.rahmlab.openglpolyglot.clibraries.GLUT;
 import com.oracle.svm.core.c.CGlobalData;
 import com.oracle.svm.core.c.CGlobalDataFactory;
 import com.oracle.svm.core.c.function.CEntryPointOptions;

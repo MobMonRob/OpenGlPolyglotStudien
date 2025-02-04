@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot;
 
+import de.dhbw.rahmlab.openglpolyglot.clibraries.Directives;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
 import de.dhbw.rahmlab.openglpolyglot.Mouse;
@@ -57,10 +58,10 @@ public class Main {
 
         while (frame.isVisible()) {
             try {
+                Thread.sleep(10);
                 imagePanel.updatePixels();
                 OpenGLPolyglot.width.get().write(frame.getWidth());
                 OpenGLPolyglot.height.get().write(frame.getHeight());
-                Thread.sleep(10);
             } catch (Exception exception) {
                 System.err.println("Exception in UI loop: " + exception.getMessage());
             }
@@ -83,7 +84,7 @@ public class Main {
     }
 
     private static void addExampleShapes(iEuclidViewer3D viewer) {
-	viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", true);
+	/*viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", true);
 
         viewer.addLine(new Point3d(0, -5, 5), new Point3d(5, -3, 4), Color.gray, 0.1, "Line");
 
@@ -102,6 +103,8 @@ public class Main {
 
 	viewer.addCube(new Point3d(1, 0, 0), new Vector3d(0, 1, 1), 1, new Color(0, 255, 127), "Cube1", false);
 	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(1, 0, 1), 1, new Color(255, 127, 0), "Cube2", true);
-	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(1, 1, 1), 1, new Color(127, 0, 255), "Cube3", false);
+	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(1, 1, 1), 1, new Color(127, 0, 255), "Cube3", false);*/
+        
+        viewer.addMesh("/home/marc/dev/EuclidView3d/src/main/resources/data/objfiles/base.dae", null);
     }
 }

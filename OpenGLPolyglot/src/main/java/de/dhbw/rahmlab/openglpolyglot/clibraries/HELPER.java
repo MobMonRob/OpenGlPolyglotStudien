@@ -1,4 +1,4 @@
-package de.dhbw.rahmlab.openglpolyglot;
+package de.dhbw.rahmlab.openglpolyglot.clibraries;
 
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CFunction;

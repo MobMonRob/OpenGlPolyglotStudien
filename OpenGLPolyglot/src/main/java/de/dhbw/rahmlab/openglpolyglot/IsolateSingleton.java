@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot;
 
+import de.dhbw.rahmlab.openglpolyglot.clibraries.Directives;
 import com.oracle.svm.core.Uninterruptible;
 import com.oracle.svm.core.c.CGlobalData;
 import com.oracle.svm.core.c.CGlobalDataFactory;

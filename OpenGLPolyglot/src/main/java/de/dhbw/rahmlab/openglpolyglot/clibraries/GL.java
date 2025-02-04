@@ -1,4 +1,4 @@
-package de.dhbw.rahmlab.openglpolyglot;
+package de.dhbw.rahmlab.openglpolyglot.clibraries;
 
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.constant.CConstant;
@@ -51,8 +51,14 @@ public class GL {
     @CConstant("GL_DEPTH_BUFFER_BIT")
     public static native int DEPTH_BUFFER_BIT();
 
+    @CConstant("GL_POINTS")
+    public static native int POINTS();
+    
     @CConstant("GL_LINES")
     public static native int LINES();
+
+    @CConstant("GL_TRIANGLES")
+    public static native int TRIANGLES();
 
     @CConstant("GL_QUADS")
     public static native int QUADS();
@@ -101,9 +107,18 @@ public class GL {
 
     @CFunction("glColor4f")
     public static native void color4f(float red, float green, float blue, float alpha);
+    
+    @CFunction("glColor4fv")
+    public static native void color4fv(CFloatPointer v);
 
     @CFunction("glColor4ub")
     public static native void color4ub(@CUnsigned int red, @CUnsigned int green, @CUnsigned int blue, @CUnsigned int alpha);
+
+    @CFunction("glNormal3fv")
+    public static native void normal3fv(CFloatPointer v);
+
+    @CFunction("glVertex3fv")
+    public static native void vertex3fv(CFloatPointer v);
 
     @CFunction("glShadeModel")
     public static native void shadeModel(int mode);
@@ -182,4 +197,7 @@ public class GL {
 
     @CFunction("glReadPixels")
     public static native void readPixels(int x, int y, int width, int height, int format, int type, PointerBase data);
+    
+    @CFunction("glMultMatrixf")
+    public static native void multMatrixf(PointerBase m);
 }

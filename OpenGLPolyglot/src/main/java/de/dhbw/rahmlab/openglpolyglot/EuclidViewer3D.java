@@ -1,9 +1,12 @@
 package de.dhbw.rahmlab.openglpolyglot;
 
+import de.dhbw.rahmlab.openglpolyglot.clibraries.AI;
+import de.dhbw.rahmlab.openglpolyglot.clibraries.Directives;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Arrow;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Circle;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Cube;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Cylinder;
+import de.dhbw.rahmlab.openglpolyglot.shapes.Mesh;
 import de.dhbw.rahmlab.openglpolyglot.shapes.RasterizedLine;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Polygon;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Shape;
@@ -13,6 +16,7 @@ import de.orat.view3d.euclid3dviewapi.spi.iEuclidViewer3D;
 import java.awt.Color;
 import java.util.HashMap;
 import org.graalvm.nativeimage.c.CContext;
+import org.graalvm.nativeimage.c.type.CTypeConversion;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
@@ -77,7 +81,9 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     @Override
     public long addMesh(String path, Matrix4d transform) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        var scene = AI.importFile(CTypeConversion.toCString(path).get(),
+                                  AI.processPreset_TargetRealtime_MaxQuality());
+        return addNode(new Mesh(scene, transform));
     }
 
     @Override

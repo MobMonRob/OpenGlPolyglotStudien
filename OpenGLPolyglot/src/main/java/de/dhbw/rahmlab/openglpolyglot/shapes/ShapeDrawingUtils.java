@@ -1,9 +1,9 @@
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
-import de.dhbw.rahmlab.openglpolyglot.GL;
-import de.dhbw.rahmlab.openglpolyglot.GLU;
-import de.dhbw.rahmlab.openglpolyglot.GLUT;
-import de.dhbw.rahmlab.openglpolyglot.HELPER;
+import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
+import de.dhbw.rahmlab.openglpolyglot.clibraries.GLU;
+import de.dhbw.rahmlab.openglpolyglot.clibraries.GLUT;
+import de.dhbw.rahmlab.openglpolyglot.clibraries.HELPER;
 import org.jogamp.vecmath.Vector3d;
 
 public class ShapeDrawingUtils {

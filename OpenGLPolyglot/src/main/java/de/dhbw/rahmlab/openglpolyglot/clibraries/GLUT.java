@@ -1,4 +1,4 @@
-package de.dhbw.rahmlab.openglpolyglot;
+package de.dhbw.rahmlab.openglpolyglot.clibraries;
 
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.constant.CConstant;
@@ -123,17 +123,17 @@ public class GLUT {
     @CFunction("glutReshapeWindow")
     public static native void reshapeWindow(int width, int height);
 
-    interface Callback extends CFunctionPointer {
+    public interface Callback extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke();
     }
 
     // Callback mit 2 int Parametern
-    interface Callback2i extends CFunctionPointer {
+    public interface Callback2i extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke(int arg1, int arg2);
     }
 
     // Callback mit 4 int Parametern
-    interface Callback4i extends CFunctionPointer {
+    public interface Callback4i extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke(int arg1, int arg2, int arg3, int arg4);
     }
 }

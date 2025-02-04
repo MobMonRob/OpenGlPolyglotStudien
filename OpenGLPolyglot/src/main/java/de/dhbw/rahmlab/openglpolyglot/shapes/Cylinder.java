@@ -1,7 +1,7 @@
 
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
-import de.dhbw.rahmlab.openglpolyglot.GL;
+import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import java.awt.Color;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
