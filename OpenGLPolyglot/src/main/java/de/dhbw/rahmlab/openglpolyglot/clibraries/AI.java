@@ -3,19 +3,24 @@ package de.dhbw.rahmlab.openglpolyglot.clibraries;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.constant.CConstant;
 import org.graalvm.nativeimage.c.function.CFunction;
-import org.graalvm.nativeimage.c.struct.AllowNarrowingCast;
 import org.graalvm.nativeimage.c.struct.CField;
 import org.graalvm.nativeimage.c.struct.CFieldAddress;
+import org.graalvm.nativeimage.c.struct.CPointerTo;
 import org.graalvm.nativeimage.c.struct.CStruct;
 import org.graalvm.nativeimage.c.type.CCharPointer;
-import org.graalvm.nativeimage.c.type.CDoublePointer;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CUnsigned;
 import org.graalvm.word.PointerBase;
 
+/**
+ * constants, functions and structs of the AssImp (Asset Importer) library
+ */
 @CContext(Directives.class)
 public class AI {
+
+    @CConstant("AI_SUCCESS")
+    public static native int SUCCESS();
 
     @CConstant("aiProcessPreset_TargetRealtime_MaxQuality")
     public static native int processPreset_TargetRealtime_MaxQuality();
@@ -25,6 +30,15 @@ public class AI {
 
     @CFunction("aiTransposeMatrix4")
     public static native void transposeMatrix4(Matrix4x4 matrix);
+
+    @CFunction("aiGetMaterialColor")
+    public static native int getMaterialColor(Material pMat, CCharPointer pKey, @CUnsigned int type, @CUnsigned int index, Color4D pOut);
+
+    @CFunction("aiGetMaterialIntegerArray")
+    public static native int getMaterialIntegerArray(Material pMat, CCharPointer pKey, @CUnsigned int type, @CUnsigned int index, CIntPointer pOut, @CUnsigned CIntPointer pMax);
+
+    @CFunction("aiGetMaterialFloatArray")
+    public static native int getMaterialFloatArray(Material pMat, CCharPointer pKey, @CUnsigned int type, @CUnsigned int index, CFloatPointer pOut, @CUnsigned CIntPointer pMax);
 
     @CStruct(value = "aiVector3D", addStructKeyword = true)
     public interface Vector3D extends PointerBase {
@@ -40,7 +54,7 @@ public class AI {
 
         Vector3D addressOf(int index);
     }
-    
+
     @CStruct(value = "aiMatrix4x4", addStructKeyword = true)
     public interface Matrix4x4 extends PointerBase {
 
@@ -65,24 +79,48 @@ public class AI {
         @CField("d4") float d4();
     }
 
+    @CPointerTo(Color4DPointerPointer.class)
+    public interface Color4DPointerPointerPointer extends PointerBase {
+
+        Color4DPointerPointer read();
+
+        Color4DPointerPointerPointer addressOf(int index);
+    }
+
+    @CPointerTo(Color4DPointer.class)
+    public interface Color4DPointerPointer extends PointerBase {
+
+        Color4DPointer read();
+
+        Color4DPointerPointer addressOf(int index);
+    }
+
+    @CPointerTo(Color4D.class)
+    public interface Color4DPointer extends PointerBase {
+
+        Color4D read();
+
+        Color4DPointer addressOf(int index);
+    }
+
     @CStruct(value = "aiColor4D", addStructKeyword = true)
     public interface Color4D extends PointerBase {
 
-        @CFieldAddress("r")
-        CFloatPointer r();
+        @CField("r")
+        float getR();
 
-        @CFieldAddress("g")
-        CFloatPointer g();
+        @CField("g")
+        float getG();
 
-        @CFieldAddress("b")
-        CFloatPointer b();
+        @CField("b")
+        float getB();
 
-        @CFieldAddress("a")
-        CFloatPointer a();
+        @CField("a")
+        float getA();
 
         Color4D addressOf(int index);
     }
-    
+
     @CStruct(value = "aiFace", addStructKeyword = true)
     public interface Face extends PointerBase {
 
@@ -95,28 +133,57 @@ public class AI {
         Face addressOf(int index);
     }
 
+    @CPointerTo(Material.class)
+    public interface MaterialPointer extends PointerBase {
+
+        Material read();
+
+        MaterialPointer addressOf(int index);
+    }
+
+    @CStruct(value = "aiMaterial", addStructKeyword = true)
+    public interface Material extends PointerBase {
+
+        @CField("mProperties")
+        PointerBase getMaterialProperty();
+
+        @CField("mNumProperties")
+        @CUnsigned int getNumProperties();
+
+        @CField("mNumAllocated")
+        @CUnsigned int getNumAllocated();
+    }
+
+    @CPointerTo(Mesh.class)
+    public interface MeshPointer extends PointerBase {
+
+        Mesh read();
+
+        MeshPointer addressOf(int index);
+    }
+
     @CStruct(value = "aiMesh", addStructKeyword = true)
     public interface Mesh extends PointerBase {
 
         @CField("mPrimitiveTypes")
-        int getPrimitiveTypes();
+        @CUnsigned int getPrimitiveTypes();
 
         @CField("mNumVertices")
-        int getNumVertices();
+        @CUnsigned int getNumVertices();
 
         @CField("mNumFaces")
-        int getNumFaces();
+        @CUnsigned int getNumFaces();
 
-        @CFieldAddress("mVertices")
+        @CField("mVertices")
         Vector3D getVertices();
 
-        @CFieldAddress("mNormals")
+        @CField("mNormals")
         Vector3D getNormals();
 
-        @CFieldAddress("mTangents")
+        @CField("mTangents")
         PointerBase getTangents();
 
-        @CFieldAddress("mBitangents")
+        @CField("mBitangents")
         PointerBase getBitangents();
 
         @CFieldAddress("mColors")
@@ -128,109 +195,113 @@ public class AI {
         @CFieldAddress("mNumUVComponents")
         CIntPointer getNumUVComponents();
 
-        @CFieldAddress("mFaces")
+        @CField("mFaces")
         Face getFaces();
 
         @CField("mNumBones")
-        int getNumBones();
+        @CUnsigned int getNumBones();
 
-        @CFieldAddress("mBones")
+        @CField("mBones")
         PointerBase getBones();
 
         @CField("mMaterialIndex")
-        int getMaterialIndex();
+        @CUnsigned int getMaterialIndex();
 
-        //@CField("mName")
-        //CCharPointer getName();
+        @CFieldAddress("mName")
+        CCharPointer getName();
 
         @CField("mNumAnimMeshes")
-        int getNumAnimMeshes();
+        @CUnsigned int getNumAnimMeshes();
 
-        @CFieldAddress("mAnimMeshes")
+        @CField("mAnimMeshes")
         PointerBase getAnimMeshes();
 
         @CField("mMethod")
         int getMethod();
 
-        //@CField("mAABB")
-        //PointerBase getAABB();
+        @CFieldAddress("mAABB")
+        PointerBase getAABB();
 
-        @CFieldAddress("mTextureCoordsNames")
+        @CField("mTextureCoordsNames")
         PointerBase getTextureCoordsNames();
+    }
 
-        Mesh addressOf(int index);
+    @CPointerTo(Node.class)
+    public interface NodePointer extends PointerBase {
+
+        Node read();
+
+        NodePointer addressOf(int index);
     }
 
     @CStruct(value = "aiNode", addStructKeyword = true)
     public interface Node extends PointerBase {
-        //@CField("mName")
-        //CCharPointer getName();
+        @CFieldAddress("mName")
+        PointerBase getName();
 
-        //@CField("mTransformation")
-        //Matrix4x4 getTransformation();
+        @CFieldAddress("mTransformation")
+        Matrix4x4 getTransformation();
 
         @CField("mParent")
         Node getParent();
 
         @CField("mNumChildren")
-        int getNumChildren();
+        @CUnsigned int getNumChildren();
 
-        @CFieldAddress("mChildren")
-        Node getChildren();
+        @CField("mChildren")
+        NodePointer getChildren();
 
         @CField("mNumMeshes")
-        int getNumMeshes();
+        @CUnsigned int getNumMeshes();
 
-        @CFieldAddress("mMeshes")
+        @CField("mMeshes")
         CIntPointer getMeshes();
 
         @CField("mMetaData")
         PointerBase getMetaData();
-
-        Node addressOf(int index);
     }
-    
+
     @CStruct(value = "aiScene", addStructKeyword = true)
     public interface Scene extends PointerBase {
         
         @CField("mFlags")
-        int getFlags();
+        @CUnsigned int getFlags();
 
         @CField("mRootNode")
         Node getRootNode();
 
         @CField("mNumMeshes")
-        int getNumMeshes();
+        @CUnsigned int getNumMeshes();
 
-        @CFieldAddress("mMeshes")
-        Mesh getMeshes();
+        @CField("mMeshes")
+        MeshPointer getMeshes();
 
         @CField("mNumMaterials")
-        int getNumMaterials();
+        @CUnsigned int getNumMaterials();
 
         @CField("mMaterials")
-        PointerBase getMaterials();
+        MaterialPointer getMaterials();
 
         @CField("mNumAnimations")
-        int getNumAnimations();
+        @CUnsigned int getNumAnimations();
 
         @CField("mAnimations")
         PointerBase getAnimations();
 
         @CField("mNumTextures")
-        int getNumTextures();
+        @CUnsigned int getNumTextures();
 
         @CField("mTextures")
         PointerBase getTextures();
 
         @CField("mNumLights")
-        int getNumLights();
+        @CUnsigned int getNumLights();
 
         @CField("mLights")
         PointerBase getLights();
 
         @CField("mNumCameras")
-        int getNumCameras();
+        @CUnsigned int getNumCameras();
 
         @CField("mCameras")
         PointerBase getCameras();
@@ -238,7 +309,13 @@ public class AI {
         @CField("mMetaData")
         PointerBase getMetaData();
 
-        //@CField("mName")
-        //CCharPointer getName();
+        @CFieldAddress("mName")
+        PointerBase getName();
+
+        @CField("mNumSkeletons")
+        @CUnsigned int getNumSkeletons();
+
+        @CField("mSkeletons")
+        PointerBase getSkeletons();
     }
 }

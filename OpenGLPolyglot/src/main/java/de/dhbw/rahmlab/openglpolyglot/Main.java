@@ -3,7 +3,6 @@ package de.dhbw.rahmlab.openglpolyglot;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.Directives;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
-import de.dhbw.rahmlab.openglpolyglot.Mouse;
 import de.dhbw.rahmlab.openglpolyglot.swing.ImagePanel;
 import de.orat.view3d.euclid3dviewapi.api.ViewerService;
 import de.orat.view3d.euclid3dviewapi.spi.iEuclidViewer3D;
@@ -14,6 +13,7 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.JFrame;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
+import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
@@ -84,7 +84,7 @@ public class Main {
     }
 
     private static void addExampleShapes(iEuclidViewer3D viewer) {
-	/*viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", true);
+	viewer.addSphere(new Point3d(-2, 2, -2), 1.5, Color.magenta, "Sphere", true);
 
         viewer.addLine(new Point3d(0, -5, 5), new Point3d(5, -3, 4), Color.gray, 0.1, "Line");
 
@@ -103,8 +103,49 @@ public class Main {
 
 	viewer.addCube(new Point3d(1, 0, 0), new Vector3d(0, 1, 1), 1, new Color(0, 255, 127), "Cube1", false);
 	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(1, 0, 1), 1, new Color(255, 127, 0), "Cube2", true);
-	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(1, 1, 1), 1, new Color(127, 0, 255), "Cube3", false);*/
-        
-        viewer.addMesh("/home/marc/dev/EuclidView3d/src/main/resources/data/objfiles/base.dae", null);
+	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(1, 1, 1), 1, new Color(127, 0, 255), "Cube3", false);
+
+        var objFilesPath = "../../EuclidView3d/src/main/resources/data/objfiles/";
+
+        viewer.addMesh(objFilesPath + "base.dae", new Matrix4d(
+                1, 0, 0, 2,
+                0, 1, 0, 1,
+                0, 0, 1, 1,
+                0, 0, 0, 1));
+
+        var rotatedMatix = new Matrix4d();
+        rotatedMatix.rotX(45);
+        rotatedMatix.setTranslation(new Vector3d(3, 1, 1));
+        viewer.addMesh(objFilesPath + "forearm.dae", rotatedMatix);
+
+        viewer.addMesh(objFilesPath + "shoulder.dae", new Matrix4d(
+                1, 0, 0, 4,
+                0, 1, 0, 1,
+                0, 0, 1, 1,
+                0, 0, 0, 1));
+
+        viewer.addMesh(objFilesPath + "upperarm.dae", new Matrix4d(
+                1, 0, 0, 5,
+                0, 1, 0, 1,
+                0, 0, 1, 1,
+                0, 0, 0, 1));
+
+        viewer.addMesh(objFilesPath + "wrist1.dae", new Matrix4d(
+                1, 0, 0, 2,
+                0, 1, 0, 1,
+                0, 0, 1, 2,
+                0, 0, 0, 1));
+
+        viewer.addMesh(objFilesPath + "wrist2.dae", new Matrix4d(
+                1, 0, 0, 3,
+                0, 1, 0, 1,
+                0, 0, 1, 2,
+                0, 0, 0, 1));
+
+        viewer.addMesh(objFilesPath + "wrist3.dae", new Matrix4d(
+                1, 0, 0, 4,
+                0, 1, 0, 1,
+                0, 0, 1, 2,
+                0, 0, 0, 1));
     }
 }

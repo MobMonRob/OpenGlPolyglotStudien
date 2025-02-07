@@ -90,6 +90,24 @@ public class GL {
     @CConstant("GL_RGBA")
     public static native int RGBA();
 
+    @CConstant("GL_FRONT_AND_BACK")
+    public static native int FRONT_AND_BACK();
+
+    @CConstant("GL_SPECULAR")
+    public static native int SPECULAR();
+
+    @CConstant("GL_EMISSION")
+    public static native int EMISSION();
+
+    @CConstant("GL_LINE")
+    public static native int LINE();
+    
+    @CConstant("GL_FILL")
+    public static native int FILL();
+
+    @CConstant("GL_CULL_FACE")
+    public static native int CULL_FACE();
+
     @CFunction("glClearColor")
     public static native void clearColor(float red, float green, float blue, float alpha);
 
@@ -124,13 +142,19 @@ public class GL {
     public static native void shadeModel(int mode);
 
     @CFunction("glLightfv")
-    public static native void lightfv(int light, int pname, final CFloatPointer params);
+    public static native void lightfv(int light, int pname, CFloatPointer params);
+
+    @CFunction("glMaterialf")
+    public static native void materialf(int face, int pname, float param);
 
     @CFunction("glMaterialfv")
-    public static native void materialfv(int face, int pname, final CFloatPointer params);
+    public static native void materialfv(int face, int pname, CFloatPointer params);
 
     @CFunction("glEnable")
     public static native void enable(int cap);
+
+    @CFunction("glDisable")
+    public static native void disable(int cap);
 
     @CFunction("glClear")
     public static native void clear(int mask);
@@ -197,7 +221,10 @@ public class GL {
 
     @CFunction("glReadPixels")
     public static native void readPixels(int x, int y, int width, int height, int format, int type, PointerBase data);
-    
+
     @CFunction("glMultMatrixf")
-    public static native void multMatrixf(PointerBase m);
+    public static native void multMatrixf(CFloatPointer m);
+
+    @CFunction("glPolygonMode")
+    public static native void polygonMode(int face, int mode);
 }
