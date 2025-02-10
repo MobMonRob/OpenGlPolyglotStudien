@@ -108,6 +108,15 @@ public class GL {
     @CConstant("GL_CULL_FACE")
     public static native int CULL_FACE();
 
+    @CConstant("GL_LIGHT_MODEL_TWO_SIDE")
+    public static native int LIGHT_MODEL_TWO_SIDE();
+
+    @CConstant("GL_TRUE")
+    public static native int TRUE();
+
+    @CConstant("GL_NORMALIZE")
+    public static native int NORMALIZE();
+
     @CFunction("glClearColor")
     public static native void clearColor(float red, float green, float blue, float alpha);
 
@@ -227,4 +236,10 @@ public class GL {
 
     @CFunction("glPolygonMode")
     public static native void polygonMode(int face, int mode);
+
+    @CFunction("glLightModeli")
+    public static native void lightModeli(int pname, int param);
+
+    @CFunction("glColorMaterial")
+    public static native void colorMaterial(int face, int mode);
 }

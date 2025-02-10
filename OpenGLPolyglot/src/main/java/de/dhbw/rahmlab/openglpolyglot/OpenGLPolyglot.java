@@ -96,11 +96,14 @@ public class OpenGLPolyglot {
             GL.lightfv(GL.LIGHT0(), GL.AMBIENT(), white.addressOfArrayElement(0));
             GL.lightfv(GL.LIGHT0(), GL.DIFFUSE(), white.addressOfArrayElement(0));
             GL.materialfv(GL.FRONT(), GL.SHININESS(), shine.addressOfArrayElement(0));
-        }
+        }*/
 
-        GL.enable(GL.LIGHTING());
-        GL.enable(GL.LIGHT0());*/
+        GL.enable(GL.LIGHT0());
         GL.enable(GL.DEPTH_TEST());
+
+        GL.lightModeli(GL.LIGHT_MODEL_TWO_SIDE(), GL.TRUE());
+        GL.enable(GL.NORMALIZE());
+        GL.colorMaterial(GL.FRONT_AND_BACK(), GL.DIFFUSE());
 
         GL.blendFunc(GL.SRC_ALPHA(), GL.ONE_MINUS_SRC_ALPHA());
         GL.enable(GL.BLEND());
@@ -153,7 +156,7 @@ public class OpenGLPolyglot {
         GL.viewport(0, 0, width, height);
         GL.matrixMode(GL.PROJECTION());
         GL.loadIdentity();
-        GL.ortho(-10 * ratio, 10 * ratio, -10, 10, -10, 10);
+        GL.ortho(-10 * ratio, 10 * ratio, -10, 10, -100, 100);
         GL.matrixMode(GL.MODELVIEW());
     }
 

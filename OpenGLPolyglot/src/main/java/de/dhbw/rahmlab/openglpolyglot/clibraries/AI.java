@@ -79,30 +79,6 @@ public class AI {
         @CField("d4") float d4();
     }
 
-    @CPointerTo(Color4DPointerPointer.class)
-    public interface Color4DPointerPointerPointer extends PointerBase {
-
-        Color4DPointerPointer read();
-
-        Color4DPointerPointerPointer addressOf(int index);
-    }
-
-    @CPointerTo(Color4DPointer.class)
-    public interface Color4DPointerPointer extends PointerBase {
-
-        Color4DPointer read();
-
-        Color4DPointerPointer addressOf(int index);
-    }
-
-    @CPointerTo(Color4D.class)
-    public interface Color4DPointer extends PointerBase {
-
-        Color4D read();
-
-        Color4DPointer addressOf(int index);
-    }
-
     @CStruct(value = "aiColor4D", addStructKeyword = true)
     public interface Color4D extends PointerBase {
 
@@ -311,11 +287,5 @@ public class AI {
 
         @CFieldAddress("mName")
         PointerBase getName();
-
-        @CField("mNumSkeletons")
-        @CUnsigned int getNumSkeletons();
-
-        @CField("mSkeletons")
-        PointerBase getSkeletons();
     }
 }
