@@ -1,22 +1,48 @@
 package de.dhbw.rahmlab.openglpolyglot.clibraries;
 
+import java.util.Collections;
 import java.util.List;
 import org.graalvm.nativeimage.c.CContext;
 
 public final class Directives implements CContext.Directives {
+
     @Override
     public List<String> getHeaderFiles() {
-        return List.of(
+
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            return List.of(
+                "<windows.h>",
                 "<GL/glu.h>",
                 "<GL/glut.h>",
                 "<assimp/cimport.h>",
                 "<assimp/scene.h>",
                 "<assimp/postprocess.h>",
                 "<FTGL/ftgl.h>");
+        }
+
+        var headerFiles = List.of(
+                "<GL/glu.h>",
+                "<GL/glut.h>",
+                "<assimp/cimport.h>",
+                "<assimp/scene.h>",
+                "<assimp/postprocess.h>",
+                "<FTGL/ftgl.h>");
+
+        return headerFiles;
     }
 
     @Override
     public List<String> getLibraries() {
+
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            return List.of(
+                "opengl32",
+                "glu32",
+                "freeglut",
+                "assimp-vc143-mt",
+                "ftgl_D");
+        }
+
         return List.of(
                 "GL",
                 "GLU",
@@ -29,7 +55,7 @@ public final class Directives implements CContext.Directives {
     public List<String> getOptions() {
 
         if (System.getProperty("os.name").startsWith("Windows")) {
-            return List.of(); // TODO: add compiler options for windows
+            return Collections.EMPTY_LIST;
         }
 
         return List.of("-I/usr/include/freetype2");

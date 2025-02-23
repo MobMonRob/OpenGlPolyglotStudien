@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.swing.JFrame;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
@@ -27,6 +29,10 @@ public class Main {
     }
 
     private static void initializeSwingFrame() {
+        // use fixed locale so reachability-metadata.json does not have to support multiple locales
+        Locale.setDefault(Locale.US); 
+        ResourceBundle.clearCache(); // needed after updating the locale
+
         var frame = new JFrame("OpenGLPolyglot");
         frame.setSize(OpenGLPolyglot.INITIAL_WIDTH, OpenGLPolyglot.INITIAL_HEIGHT);
         frame.getContentPane().setBackground(Color.WHITE);
@@ -105,7 +111,7 @@ public class Main {
 	viewer.addCube(new Point3d(0, 0, 0), new Vector3d(1, 0, 1), 1, new Color(255, 127, 0), "Cube2", true);
 	viewer.addCube(new Point3d(0, 0, 1), new Vector3d(1, 1, 1), 1, new Color(127, 0, 255), "Cube3", false);
 
-        var objFilesPath = "../../EuclidView3d/src/main/resources/data/objfiles/";
+        var objFilesPath = "src/main/resources/data/objfiles/";
 
         viewer.addMesh(objFilesPath + "base.dae", new Matrix4d(
                 1, 0, 0, 2,

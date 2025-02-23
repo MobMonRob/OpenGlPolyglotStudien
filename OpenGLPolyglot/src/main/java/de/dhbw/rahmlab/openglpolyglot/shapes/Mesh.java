@@ -97,9 +97,6 @@ public final class Mesh implements Shape {
 
         for (var i = 0; i < face.getNumIndices(); i++) {
             var index = face.getIndices().addressOf(i).read();
-            if (mesh.getColors().addressOf(0).isNonNull()) {
-                GL.color4fv((CFloatPointer)mesh.getColors().addressOf(0).addressOf(index));
-            }
             if (mesh.getNormals().isNonNull()) {
                 GL.normal3fv(mesh.getNormals().addressOf(index).x());
             }
