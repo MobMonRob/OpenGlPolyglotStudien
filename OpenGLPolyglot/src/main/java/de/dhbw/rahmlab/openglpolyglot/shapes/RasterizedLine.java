@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
+import de.dhbw.rahmlab.openglpolyglot.AABB;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import java.awt.Color;
 import org.jogamp.vecmath.Matrix4d;
@@ -42,5 +43,11 @@ public class RasterizedLine implements Shape {
     public void transform(Matrix4d transformMatrix) {
         transformMatrix.transform(start);
         transformMatrix.transform(end);
+    }
+
+    @Override
+    public AABB getAABB() {
+        return new AABB(Math.min(start.x, end.x), Math.min(start.y, end.y), Math.min(start.z, end.z),
+                        Math.max(start.x, end.x), Math.max(start.y, end.y), Math.max(start.z, end.z));
     }
 }

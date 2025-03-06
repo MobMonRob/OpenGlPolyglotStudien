@@ -20,15 +20,13 @@ public final class Directives implements CContext.Directives {
                 "<FTGL/ftgl.h>");
         }
 
-        var headerFiles = List.of(
+        return List.of(
                 "<GL/glu.h>",
                 "<GL/glut.h>",
                 "<assimp/cimport.h>",
                 "<assimp/scene.h>",
                 "<assimp/postprocess.h>",
                 "<FTGL/ftgl.h>");
-
-        return headerFiles;
     }
 
     @Override

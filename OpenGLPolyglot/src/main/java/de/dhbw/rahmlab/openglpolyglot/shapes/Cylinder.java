@@ -1,6 +1,7 @@
 
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
+import de.dhbw.rahmlab.openglpolyglot.AABB;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import java.awt.Color;
 import org.jogamp.vecmath.Matrix4d;
@@ -58,5 +59,11 @@ public class Cylinder implements Shape {
     public void transform(Matrix4d transformMatrix) {
         transformMatrix.transform(start);
         transformMatrix.transform(end);
+    }
+
+    @Override
+    public AABB getAABB() { // approximation
+        return new AABB(Math.min(start.x, end.x) - radius, Math.min(start.y, end.y) - radius, Math.min(start.z, end.z) - radius,
+                        Math.max(start.x, end.x) + radius, Math.max(start.y, end.y) + radius, Math.max(start.z, end.z) + radius);
     }
 }

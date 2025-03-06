@@ -126,6 +126,7 @@ public class OpenGLPolyglot {
         }*/
 
         Shape.drawAll(viewer.getNodes().values());
+        ((AABB) viewer.getAABB()).draw();
 
         GL.flush();
     }

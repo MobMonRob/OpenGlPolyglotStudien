@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
+import de.dhbw.rahmlab.openglpolyglot.AABB;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.GLU;
 import java.awt.Color;
@@ -40,5 +41,11 @@ public class Sphere implements Shape {
     @Override
     public void transform(Matrix4d transformMatrix) {
         transformMatrix.transform(location);
+    }
+
+    @Override
+    public AABB getAABB() {
+        return new AABB(location.x - radius, location.y - radius, location.z - radius,
+                        location.x + radius, location.y + radius, location.z + radius);
     }
 }

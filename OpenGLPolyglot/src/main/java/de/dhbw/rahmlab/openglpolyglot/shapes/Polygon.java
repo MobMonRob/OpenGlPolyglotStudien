@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
+import de.dhbw.rahmlab.openglpolyglot.AABB;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import java.awt.Color;
 import java.util.stream.Stream;
@@ -46,5 +47,16 @@ public class Polygon implements Shape {
     public void transform(Matrix4d transformMatrix) {
         transformMatrix.transform(location);
         Stream.of(corners).forEach(corner -> transformMatrix.transform(corner));
+    }
+
+    @Override
+    public AABB getAABB() {
+        return new AABB(
+            Stream.of(corners).mapToDouble(corner -> corner.x).min().orElse(0),
+            Stream.of(corners).mapToDouble(corner -> corner.y).min().orElse(0),
+            Stream.of(corners).mapToDouble(corner -> corner.z).min().orElse(0),
+            Stream.of(corners).mapToDouble(corner -> corner.x).max().orElse(0),
+            Stream.of(corners).mapToDouble(corner -> corner.y).max().orElse(0),
+            Stream.of(corners).mapToDouble(corner -> corner.z).max().orElse(0));
     }
 }

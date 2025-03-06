@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
+import de.dhbw.rahmlab.openglpolyglot.AABB;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.AI;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import org.graalvm.nativeimage.StackValue;
@@ -16,11 +17,14 @@ public final class Mesh implements Shape {
     private final Point3d location;
     private final Vector3d direction;
 
+    private float aabbMinX, aabbMinY, aabbMinZ, aabbMaxX, aabbMaxY, aabbMaxZ;
+
     public Mesh(AI.Scene scene, Matrix4d transformMatrix) {
         this.scene = scene;
         this.location = new Point3d(0, 0, 0);
         this.direction = new Vector3d(0, 0, 1);
-        this.transform(transformMatrix);
+        transform(transformMatrix);
+        initlializeAABBValues(scene.getRootNode());
 	AI.transposeMatrix4(scene.getRootNode().getTransformation());
     }
 
@@ -49,20 +53,25 @@ public final class Mesh implements Shape {
         transformMatrix.transform(direction);
     }
 
-    private void drawNodeRecursive(AI.Node nd) {
+    @Override
+    public AABB getAABB() {
+        return new AABB(aabbMinX, aabbMinY, aabbMinZ, aabbMaxX, aabbMaxY, aabbMaxZ);
+    }
+
+    private void drawNodeRecursive(AI.Node node) {
 
 	GL.pushMatrix();
-	GL.multMatrixf((CFloatPointer)nd.getTransformation());
+	GL.multMatrixf((CFloatPointer)node.getTransformation());
 
         // draw all meshes in node
-        for (var n = 0; n < nd.getNumMeshes(); n++) {
-            var mesh = scene.getMeshes().addressOf(nd.getMeshes().addressOf(n).read()).read();
+        for (var n = 0; n < node.getNumMeshes(); n++) {
+            var mesh = scene.getMeshes().addressOf(node.getMeshes().addressOf(n).read()).read();
             drawMesh(mesh);
 	}
 
         // draw all child nodes
-	for (var n = 0; n < nd.getNumChildren(); n++) {
-            drawNodeRecursive(nd.getChildren().addressOf(n).read());
+	for (var n = 0; n < node.getNumChildren(); n++) {
+            drawNodeRecursive(node.getChildren().addressOf(n).read());
 	}
 
 	GL.popMatrix();
@@ -188,5 +197,32 @@ public final class Mesh implements Shape {
 
     private void fillFloatArrayWithColor(AI.Color4D color, CFloatPointer array) {
         setFloatArrayValues(array, color.getR(), color.getG(), color.getB(), color.getA());
+    }
+    
+    private void initlializeAABBValues(AI.Node node) {
+        for (var meshIndex = 0; meshIndex < node.getNumMeshes(); meshIndex++) {
+            var mesh = scene.getMeshes().addressOf(node.getMeshes().addressOf(meshIndex).read()).read();
+            includeIntoAABB(mesh);
+	}
+
+	for (var childNodeIndex = 0; childNodeIndex < node.getNumChildren(); childNodeIndex++) {
+            initlializeAABBValues(node.getChildren().addressOf(childNodeIndex).read());
+	}
+    }
+
+    private void includeIntoAABB(AI.Mesh mesh) {
+        var meshMinX = mesh.getAABB().getMin().x().read();
+        var meshMinY = mesh.getAABB().getMin().y().read();
+        var meshMinZ = mesh.getAABB().getMin().z().read();
+        var meshMaxX = mesh.getAABB().getMax().x().read();
+        var meshMaxY = mesh.getAABB().getMax().y().read();
+        var meshMaxZ = mesh.getAABB().getMax().z().read();
+
+        if (meshMinX < this.aabbMinX) this.aabbMinX = meshMinX;
+        if (meshMinY < this.aabbMinY) this.aabbMinY = meshMinY;
+        if (meshMinZ < this.aabbMinZ) this.aabbMinZ = meshMinZ;
+        if (meshMaxX > this.aabbMaxX) this.aabbMaxX = meshMaxX;
+        if (meshMaxY > this.aabbMaxY) this.aabbMaxY = meshMaxY;
+        if (meshMaxZ > this.aabbMaxZ) this.aabbMaxZ = meshMaxZ;
     }
 }

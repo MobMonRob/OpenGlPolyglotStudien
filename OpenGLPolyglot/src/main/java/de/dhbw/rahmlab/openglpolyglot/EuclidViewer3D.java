@@ -24,12 +24,12 @@ import org.jogamp.vecmath.Vector3d;
 @CContext(Directives.class)
 public class EuclidViewer3D implements iEuclidViewer3D {
 
-    private HashMap<Long, Shape> nodes = new HashMap<>();
+    private final HashMap<Long, Shape> nodes = new HashMap<>();
+    private final AABB aabb = new AABB(nodes.values());
     private long nodesCount = 0L;
 
     @Override
     public void open() {
-        addCoordinateAxes();
         OpenGLPolyglot.initialize();
     }
 
@@ -37,12 +37,11 @@ public class EuclidViewer3D implements iEuclidViewer3D {
     public void close() {
         nodes.clear();
         nodesCount = 0L;
-        // TODO: close window
     }
 
     @Override
     public iAABB getAABB() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return aabb;
     }
 
     @Override
@@ -89,6 +88,7 @@ public class EuclidViewer3D implements iEuclidViewer3D {
     @Override
     public boolean removeNode(long handle) {
         var isRemoved = nodes.remove(handle) != null;
+        aabb.calculateAABBFor(nodes.values());
         return isRemoved;
     }
 
@@ -104,12 +104,7 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     private long addNode(Shape shape) {
         nodes.put(++nodesCount, shape);
+        aabb.calculateAABBFor(nodes.values());
         return nodesCount;
-    }
-
-    private void addCoordinateAxes() {
-        addRasterizedLine(new Point3d(0, 0, 0), new Point3d(10, 0, 0), Color.red, 2);
-	addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 10, 0), Color.green, 2);
-	addRasterizedLine(new Point3d(0, 0, 0), new Point3d(0, 0, 10), Color.blue, 2);
     }
 }

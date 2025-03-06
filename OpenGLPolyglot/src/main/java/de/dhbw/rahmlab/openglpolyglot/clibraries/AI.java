@@ -97,6 +97,16 @@ public class AI {
         Color4D addressOf(int index);
     }
 
+    @CStruct(value = "aiAABB", addStructKeyword = true)
+    public interface AABB extends PointerBase {
+
+        @CFieldAddress("mMin")
+        Vector3D getMin();
+
+        @CFieldAddress("mMax")
+        Vector3D getMax();
+    }
+
     @CStruct(value = "aiFace", addStructKeyword = true)
     public interface Face extends PointerBase {
 
@@ -196,7 +206,7 @@ public class AI {
         int getMethod();
 
         @CFieldAddress("mAABB")
-        PointerBase getAABB();
+        AABB getAABB();
 
         @CField("mTextureCoordsNames")
         PointerBase getTextureCoordsNames();

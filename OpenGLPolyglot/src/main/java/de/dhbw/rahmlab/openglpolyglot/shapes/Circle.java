@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
+import de.dhbw.rahmlab.openglpolyglot.AABB;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import java.awt.Color;
 import org.jogamp.vecmath.Matrix4d;
@@ -76,5 +77,11 @@ public class Circle implements Shape {
     public void transform(Matrix4d transformMatrix) {
         transformMatrix.transform(location);
         transformMatrix.transform(normal);
+    }
+
+    @Override
+    public AABB getAABB() { // approximation
+        return new AABB(location.x - radius, location.y - radius, location.z - radius,
+                        location.x + radius, location.y + radius, location.z + radius);
     }
 }

@@ -1,5 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot.shapes;
 
+import de.dhbw.rahmlab.openglpolyglot.AABB;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import java.awt.Color;
 import org.jogamp.vecmath.Matrix4d;
@@ -59,5 +60,16 @@ public class Arrow implements Shape {
     public void transform(Matrix4d transformMatrix) {
         transformMatrix.transform(location);
         transformMatrix.transform(direction);
+    }
+
+    @Override
+    public AABB getAABB() { // approximation
+        var coneRadius = radius*1.6;
+        var start = location;
+        var end = (Point3d) location.clone();
+        end.add(direction);
+
+        return new AABB(Math.min(start.x, end.x) - coneRadius, Math.min(start.y, end.y) - coneRadius, Math.min(start.z, end.z) - coneRadius,
+                        Math.max(start.x, end.x) + coneRadius, Math.max(start.y, end.y) + coneRadius, Math.max(start.z, end.z) + coneRadius);
     }
 }
