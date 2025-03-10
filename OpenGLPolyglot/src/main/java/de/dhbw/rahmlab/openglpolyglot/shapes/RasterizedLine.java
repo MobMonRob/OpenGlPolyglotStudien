@@ -50,4 +50,12 @@ public class RasterizedLine implements Shape {
         return new AABB(Math.min(start.x, end.x), Math.min(start.y, end.y), Math.min(start.z, end.z),
                         Math.max(start.x, end.x), Math.max(start.y, end.y), Math.max(start.z, end.z));
     }
+
+    public Point3d getStart() {
+        return start;
+    }
+
+    public Point3d getEnd() {
+        return end;
+    }
 }
