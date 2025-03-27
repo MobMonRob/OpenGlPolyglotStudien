@@ -1,7 +1,9 @@
 package de.dhbw.rahmlab.openglpolyglot;
 
+import de.dhbw.rahmlab.openglpolyglot.clibraries.GL;
 import de.dhbw.rahmlab.openglpolyglot.shapes.RasterizedLine;
 import de.dhbw.rahmlab.openglpolyglot.shapes.Shape;
+import de.dhbw.rahmlab.openglpolyglot.shapes.ShapeDrawingUtils;
 import de.orat.view3d.euclid3dviewapi.spi.iAABB;
 import de.orat.view3d.euclid3dviewapi.util.CutFailedException;
 import de.orat.view3d.euclid3dviewapi.util.Line;
@@ -96,8 +98,90 @@ public class AABB implements iAABB {
 
     public void draw() {
         for (RasterizedLine outline : outlines) {
-            outline.draw();
+            if (!isLineInForeground(outline.getStart(), outline.getEnd())) {
+                outline.draw();
+            }
         }
+
+        var mesuringScaleX = Math.pow(10, (int) Math.log10(Math.max(maxX, -minX)) + 1);
+        var mesuringScaleY = Math.pow(10, (int) Math.log10(Math.max(maxY, -minZ)) + 1);
+        var mesuringScaleZ = Math.pow(10, (int) Math.log10(Math.max(maxZ, -minY)) + 1);
+
+        var mesuringSubsections = new double[] { -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1 };
+
+        for (var subsection : mesuringSubsections) {
+            drawMeasuringLines(mesuringScaleX * subsection,
+                               mesuringScaleY * subsection,
+                               mesuringScaleZ * subsection);
+        }
+    }
+
+    private void drawMeasuringLines(double x, double y, double z) {
+
+        var xMeasuringPoints = new Point3d[] {
+            new Point3d(x, minY, minZ),
+            new Point3d(x, minY, maxZ),
+            new Point3d(x, maxY, minZ),
+            new Point3d(x, maxY, maxZ),
+        };
+        var yMesuringPoints = new Point3d[] {
+            new Point3d(minX, y, minZ),
+            new Point3d(minX, y, maxZ),
+            new Point3d(maxX, y, minZ),
+            new Point3d(maxX, y, maxZ),
+        };
+        var zMesuringPoints = new Point3d[] {
+            new Point3d(minX, minY, z),
+            new Point3d(minX, maxY, z),
+            new Point3d(maxX, minY, z),
+            new Point3d(maxX, maxY, z),
+        };
+
+        if (x >= minX && x <= maxX) drawMeasuringLines(x, xMeasuringPoints);
+        if (y >= minY && y <= maxY) drawMeasuringLines(y, yMesuringPoints);
+        if (z >= minZ && z <= maxZ) drawMeasuringLines(z, zMesuringPoints);
+    }
+
+    private void drawMeasuringLines(double measurement, Point3d[] measuringPoints) {
+
+        var mesuringLines = new RasterizedLine[] {
+            new RasterizedLine(measuringPoints[0], measuringPoints[1], Color.black, 1),
+            new RasterizedLine(measuringPoints[0], measuringPoints[2], Color.black, 1),
+            new RasterizedLine(measuringPoints[1], measuringPoints[3], Color.black, 1),
+            new RasterizedLine(measuringPoints[2], measuringPoints[3], Color.black, 1),
+        };
+
+        for (var line : mesuringLines) {
+            if (!isLineInForeground(line.getStart(), line.getEnd())) {
+                line.draw();
+            }
+        }
+
+        for (var point : measuringPoints) {
+            if (!isLineInForeground(point, point)) {
+                GL.translated(point.x, point.y, point.z);
+                ShapeDrawingUtils.drawLabel(measurement + "");
+                GL.translated(-point.x, -point.y, -point.z);
+            }
+        }
+    }
+
+    private boolean isLineInForeground(Point3d start, Point3d end) {
+        var xRotation = OpenGLPolyglot.xRotation.get().read();
+        var yRotation = OpenGLPolyglot.yRotation.get().read();
+
+        return (isInRange(xRotation,   0, 180) && isEqual(start.y, end.y, maxY))
+            //     => Decke ist im Vordergrund & Linie ist Decken-Linie
+            || (isInRange(xRotation, 180, 360) && isEqual(start.y, end.y, minY))
+            //     => Boden ist im Vordergrund & Linie ist Boden-Linie
+            || (isInRange(yRotation,   0,  90) && (isEqual(start.z, end.z, maxZ) || isEqual(start.x, end.x, minX)))
+            //     => vordere xy-Ebene oder hintere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            || (isInRange(yRotation,  90, 180) && (isEqual(start.x, end.x, minX) || isEqual(start.z, end.z, minZ)))
+            //     => hintere yz-Ebene oder vordere xy-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            || (isInRange(yRotation, 180, 270) && (isEqual(start.z, end.z, minZ) || isEqual(start.x, end.x, maxX)))
+            //     => hintere xy-Ebene oder vordere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            || (isInRange(yRotation, 270, 360) && (isEqual(start.x, end.x, maxX) || isEqual(start.z, end.z, maxZ)));
+            //     => vordere yz-Ebene oder vordere xy-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
     }
 
     private RasterizedLine[] calculateOutlines() {
@@ -154,5 +238,18 @@ public class AABB implements iAABB {
 
     public double getMaxZ() {
         return maxZ;
+    }
+
+    private static boolean isInRange(double value, double start, double end) {
+        return value >= start && value < end;
+    }
+
+    private static boolean isEqual(double... values) {
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] != values[0]) {
+                return false;
+            }
+        }
+        return true;
     }
 }

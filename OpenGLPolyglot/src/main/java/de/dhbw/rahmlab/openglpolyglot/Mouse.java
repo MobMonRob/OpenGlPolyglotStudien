@@ -37,9 +37,9 @@ public class Mouse {
         var deltaX = x - mouseXPtr.read();
         var deltaY = y - mouseYPtr.read();
         // rotiere entlang der Y-Achse, wenn sich Maus in X-Richtung bewegt
-        xRotationPtr.write(deltaY + xRotationPtr.read());
+        xRotationPtr.write((deltaY + xRotationPtr.read() + 360) % 360);
         // rotiere entlang der X-Achse, wenn sich Maus in Y-Richtung bewegt
-        yRotationPtr.write(deltaX + yRotationPtr.read());
+        yRotationPtr.write((deltaX + yRotationPtr.read() + 360) % 360);
         mouseXPtr.write(x);
         mouseYPtr.write(y);
     }
