@@ -34,7 +34,7 @@ public class Main {
         ResourceBundle.clearCache(); // needed after updating the locale
 
         var frame = new JFrame("OpenGLPolyglot");
-        frame.setSize(OpenGLPolyglot.INITIAL_WIDTH, OpenGLPolyglot.INITIAL_HEIGHT);
+        frame.setSize(OpenGLRenderer.INITIAL_WIDTH, OpenGLRenderer.INITIAL_HEIGHT);
         frame.getContentPane().setBackground(Color.WHITE);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,20 +42,20 @@ public class Main {
         imagePanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                Mouse.mouseX.get().write(e.getX());
-                Mouse.mouseY.get().write(e.getY());
+                MouseListener.mouseX.get().write(e.getX());
+                MouseListener.mouseY.get().write(e.getY());
             }
         });
         imagePanel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                Mouse.onMouseMotion(e.getX(), e.getY());
+                MouseListener.onMouseMotion(e.getX(), e.getY());
             }
         });
         imagePanel.addMouseWheelListener(new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                var scalePtr = OpenGLPolyglot.scale.get();
+                var scalePtr = OpenGLRenderer.scale.get();
                 scalePtr.write(scalePtr.read() * (-0.1f*e.getWheelRotation() + 1f));
             }
         });
@@ -66,8 +66,8 @@ public class Main {
             try {
                 Thread.sleep(10);
                 imagePanel.updatePixels();
-                OpenGLPolyglot.width.get().write(frame.getWidth());
-                OpenGLPolyglot.height.get().write(frame.getHeight());
+                OpenGLRenderer.width.get().write(frame.getWidth());
+                OpenGLRenderer.height.get().write(frame.getHeight());
             } catch (Exception exception) {
                 System.err.println("Exception in UI loop: " + exception.getMessage());
             }

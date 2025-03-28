@@ -20,39 +20,39 @@ import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
 
 @CContext(Directives.class)
-public class OpenGLPolyglot {
-    
+public class OpenGLRenderer {
+
     public static final int INITIAL_WIDTH = 800;
     public static final int INITIAL_HEIGHT = 800;
     private static int latestWidth = INITIAL_WIDTH;
     private static int latestHeight = INITIAL_HEIGHT;
 
-    public static final CGlobalData<CFloatPointer> xRotation =
-        CGlobalDataFactory.createBytes(() -> 4);
+    public static final CGlobalData<CFloatPointer> xRotation
+            = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<CFloatPointer> yRotation =
-        CGlobalDataFactory.createBytes(() -> 4);
+    public static final CGlobalData<CFloatPointer> yRotation
+            = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<CFloatPointer> scale =
-        CGlobalDataFactory.createBytes(() -> 4);
+    public static final CGlobalData<CFloatPointer> scale
+            = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<CIntPointer> width =
-        CGlobalDataFactory.createBytes(() -> 4);
+    public static final CGlobalData<CIntPointer> width
+            = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<CIntPointer> height =
-        CGlobalDataFactory.createBytes(() -> 4);
+    public static final CGlobalData<CIntPointer> height
+            = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<CCharPointer> pixelMap =
-        CGlobalDataFactory.createBytes(() -> 3840 * 2160 * 4); // max resolution (4k) * 4 components (RGBA)
+    public static final CGlobalData<CCharPointer> pixelMap
+            = CGlobalDataFactory.createBytes(() -> 3840 * 2160 * 4); // max resolution (4k) * 4 components (RGBA)
 
-    private static final CEntryPointLiteral<GLUT.Callback> displayCallback =
-        CEntryPointLiteral.create(OpenGLPolyglot.class, "display");
+    private static final CEntryPointLiteral<GLUT.Callback> displayCallback
+            = CEntryPointLiteral.create(OpenGLRenderer.class, "display");
 
-    private static final CEntryPointLiteral<GLUT.Callback> idleCallback =
-        CEntryPointLiteral.create(OpenGLPolyglot.class, "idle");
+    private static final CEntryPointLiteral<GLUT.Callback> idleCallback
+            = CEntryPointLiteral.create(OpenGLRenderer.class, "idle");
 
-    private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback =
-        CEntryPointLiteral.create(OpenGLPolyglot.class, "reshape", int.class, int.class);
+    private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback
+            = CEntryPointLiteral.create(OpenGLRenderer.class, "reshape", int.class, int.class);
 
     public static EuclidViewer3D viewer;
 
@@ -65,8 +65,8 @@ public class OpenGLPolyglot {
         GLUT.displayFunc(displayCallback.getFunctionPointer());
         GLUT.idleFunc(idleCallback.getFunctionPointer());
         GLUT.reshapeFunc(reshapeCallback.getFunctionPointer());
-        GLUT.mouseFunc(Mouse.mouseClickCallback.getFunctionPointer());
-        GLUT.motionFunc(Mouse.mouseMotionCallback.getFunctionPointer());
+        GLUT.mouseFunc(MouseListener.mouseClickCallback.getFunctionPointer());
+        GLUT.motionFunc(MouseListener.mouseMotionCallback.getFunctionPointer());
         GLUT.mainLoop();
     }
 
@@ -109,12 +109,13 @@ public class OpenGLPolyglot {
         GL.enable(GL.BLEND());
     }
 
+    @SuppressWarnings("unused") // implicitly called with this.displayCallback
     @CEntryPoint
     @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
-                        epilogue = CEntryPointSetup.LeaveEpilogue.class)
+            epilogue = CEntryPointSetup.LeaveEpilogue.class)
     private static void display() {
         var scalef = scale.get().read();
- 
+
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
         GL.loadIdentity();
 
@@ -131,9 +132,10 @@ public class OpenGLPolyglot {
         GL.flush();
     }
 
+    @SuppressWarnings("unused") // implicitly called with this.idleCallback
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
+            epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void idle() {
 
         var currentWidth = width.get().read();
@@ -149,9 +151,10 @@ public class OpenGLPolyglot {
         GLUT.postRedisplay();
     }
 
+    @SuppressWarnings("unused") // implicitly called with this.reshapeCallback
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
+            epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void reshape(int width, int height) {
         double ratio = (double) width / (double) height;
         GL.viewport(0, 0, width, height);

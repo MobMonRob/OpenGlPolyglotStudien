@@ -30,7 +30,7 @@ public class EuclidViewer3D implements iEuclidViewer3D {
 
     @Override
     public void open() {
-        OpenGLPolyglot.initialize();
+        OpenGLRenderer.initialize();
     }
 
     @Override

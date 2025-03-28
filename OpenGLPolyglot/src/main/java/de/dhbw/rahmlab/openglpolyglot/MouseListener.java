@@ -12,26 +12,27 @@ import org.graalvm.nativeimage.c.function.CEntryPointLiteral;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 
 @CContext(Directives.class)
-public class Mouse {
+public class MouseListener {
 
-    public static final CGlobalData<CIntPointer> mouseX =
-        CGlobalDataFactory.createBytes(() -> 4);
+    public static final CGlobalData<CIntPointer> mouseX
+            = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<CIntPointer> mouseY =
-        CGlobalDataFactory.createBytes(() -> 4);
+    public static final CGlobalData<CIntPointer> mouseY
+            = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CEntryPointLiteral<GLUT.Callback2i> mouseMotionCallback =
-        CEntryPointLiteral.create(Mouse.class, "onMouseMotion", int.class, int.class);
+    public static final CEntryPointLiteral<GLUT.Callback2i> mouseMotionCallback
+            = CEntryPointLiteral.create(MouseListener.class, "onMouseMotion", int.class, int.class);
 
-    public static final CEntryPointLiteral<GLUT.Callback4i> mouseClickCallback =
-        CEntryPointLiteral.create(Mouse.class, "onMouseClick", int.class, int.class, int.class, int.class);
+    public static final CEntryPointLiteral<GLUT.Callback4i> mouseClickCallback
+            = CEntryPointLiteral.create(MouseListener.class, "onMouseClick", int.class, int.class, int.class, int.class);
 
+    @SuppressWarnings("unused") // implicitly called with this.mouseMotionCallback
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
+            epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     public static void onMouseMotion(int x, int y) {
-        var xRotationPtr = OpenGLPolyglot.xRotation.get();
-        var yRotationPtr = OpenGLPolyglot.yRotation.get();
+        var xRotationPtr = OpenGLRenderer.xRotation.get();
+        var yRotationPtr = OpenGLRenderer.yRotation.get();
         var mouseXPtr = mouseX.get();
         var mouseYPtr = mouseY.get();
         var deltaX = x - mouseXPtr.read();
@@ -44,11 +45,12 @@ public class Mouse {
         mouseYPtr.write(y);
     }
 
+    @SuppressWarnings("unused") // implicitly called with this.mouseClickCallback
     @CEntryPoint
     @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
-                        epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
+            epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void onMouseClick(int button, int state, int x, int y) {
-        var scalePtr = OpenGLPolyglot.scale.get();
+        var scalePtr = OpenGLRenderer.scale.get();
 
         if (button == 3 /* mouse wheel up */) {
             scalePtr.write(scalePtr.read() * 1.1f);

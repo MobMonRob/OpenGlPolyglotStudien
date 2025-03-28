@@ -167,21 +167,21 @@ public class AABB implements iAABB {
     }
 
     private boolean isLineInForeground(Point3d start, Point3d end) {
-        var xRotation = OpenGLPolyglot.xRotation.get().read();
-        var yRotation = OpenGLPolyglot.yRotation.get().read();
+        var xRotation = OpenGLRenderer.xRotation.get().read();
+        var yRotation = OpenGLRenderer.yRotation.get().read();
 
         return (isInRange(xRotation,   0, 180) && isEqual(start.y, end.y, maxY))
             //     => Decke ist im Vordergrund & Linie ist Decken-Linie
             || (isInRange(xRotation, 180, 360) && isEqual(start.y, end.y, minY))
             //     => Boden ist im Vordergrund & Linie ist Boden-Linie
             || (isInRange(yRotation,   0,  90) && (isEqual(start.z, end.z, maxZ) || isEqual(start.x, end.x, minX)))
-            //     => vordere xy-Ebene oder hintere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            //     => vordere xy-Ebene und hintere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
             || (isInRange(yRotation,  90, 180) && (isEqual(start.x, end.x, minX) || isEqual(start.z, end.z, minZ)))
-            //     => hintere yz-Ebene oder vordere xy-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            //     => hintere yz-Ebene und vordere xy-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
             || (isInRange(yRotation, 180, 270) && (isEqual(start.z, end.z, minZ) || isEqual(start.x, end.x, maxX)))
-            //     => hintere xy-Ebene oder vordere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            //     => hintere xy-Ebene und vordere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
             || (isInRange(yRotation, 270, 360) && (isEqual(start.x, end.x, maxX) || isEqual(start.z, end.z, maxZ)));
-            //     => vordere yz-Ebene oder vordere xy-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            //     => vordere yz-Ebene und vordere xy-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
     }
 
     private RasterizedLine[] calculateOutlines() {

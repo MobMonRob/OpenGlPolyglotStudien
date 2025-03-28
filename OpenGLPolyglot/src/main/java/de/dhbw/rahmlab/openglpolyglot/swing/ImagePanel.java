@@ -1,6 +1,6 @@
 package de.dhbw.rahmlab.openglpolyglot.swing;
 
-import de.dhbw.rahmlab.openglpolyglot.OpenGLPolyglot;
+import de.dhbw.rahmlab.openglpolyglot.OpenGLRenderer;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -11,7 +11,7 @@ public class ImagePanel extends JPanel {
     private BufferedImage image;
 
     public ImagePanel() {
-        image = new BufferedImage(OpenGLPolyglot.INITIAL_WIDTH, OpenGLPolyglot.INITIAL_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(OpenGLRenderer.INITIAL_WIDTH, OpenGLRenderer.INITIAL_HEIGHT, BufferedImage.TYPE_INT_RGB);
     }
 
     @Override
@@ -20,12 +20,12 @@ public class ImagePanel extends JPanel {
     }
 
     public void updatePixels() {
-        var width = OpenGLPolyglot.width.get().read();
-        var height = OpenGLPolyglot.height.get().read();
+        var width = OpenGLRenderer.width.get().read();
+        var height = OpenGLRenderer.height.get().read();
         var pixelMap = new int[width * height * 4];
 
         for (int i = 0; i < pixelMap.length; i++) {
-            pixelMap[i] = OpenGLPolyglot.pixelMap.get().read(i);
+            pixelMap[i] = OpenGLRenderer.pixelMap.get().read(i);
         }
 
         var newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
