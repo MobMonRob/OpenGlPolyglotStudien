@@ -15,6 +15,7 @@ import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.function.CEntryPointLiteral;
 import org.graalvm.nativeimage.c.type.CCharPointer;
+import org.graalvm.nativeimage.c.type.CCharPointerPointer;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
@@ -58,7 +59,10 @@ public class OpenGLRenderer {
 
     public static void initialize() {
         viewer = (EuclidViewer3D) ViewerService.getInstance().getViewer().get();
+        width.get().write(INITIAL_WIDTH);
+        height.get().write(INITIAL_HEIGHT);
         scale.get().write(1f);
+
         initializeWindow();
         setUpLightingAndMaterials();
 
@@ -67,22 +71,21 @@ public class OpenGLRenderer {
         GLUT.reshapeFunc(reshapeCallback.getFunctionPointer());
         GLUT.mouseFunc(MouseListener.mouseClickCallback.getFunctionPointer());
         GLUT.motionFunc(MouseListener.mouseMotionCallback.getFunctionPointer());
+        
         GLUT.mainLoop();
     }
 
     private static void initializeWindow() {
-        try (var argv = CTypeConversion.toCStrings(new String[0])) {
-            var argc = StackValue.get(CIntPointer.class);
-            argc.write(0);
-            GLUT.init(argc, argv.get());
-        }
+        var arguments = StackValue.get(CCharPointerPointer.class);
+        var argumentsSize = StackValue.get(CIntPointer.class);
+        argumentsSize.write(0);
 
-        width.get().write(INITIAL_WIDTH);
-        height.get().write(INITIAL_HEIGHT);
-
+        GLUT.init(argumentsSize, arguments);
         GLUT.initDisplayMode(GLUT.SINGLE() | GLUT.RGB() | GLUT.DEPTH());
-        GLUT.initWindowPosition(15, 15);
         GLUT.initWindowSize(INITIAL_WIDTH, INITIAL_HEIGHT);
+        GLUT.initWindowPosition(GLUT.get(GLUT.SCREEN_WIDTH())/2 - INITIAL_WIDTH/2,
+                                GLUT.get(GLUT.SCREEN_HEIGHT())/2 - INITIAL_HEIGHT/2);
+
         try (var title = CTypeConversion.toCString("GraalVM OpenGL")) {
             GLUT.createWindow(title.get());
         }
@@ -98,14 +101,13 @@ public class OpenGLRenderer {
             GL.materialfv(GL.FRONT(), GL.SHININESS(), shine.addressOfArrayElement(0));
         }*/
 
+        GL.lightModeli(GL.LIGHT_MODEL_TWO_SIDE(), GL.TRUE());
+        GL.colorMaterial(GL.FRONT_AND_BACK(), GL.DIFFUSE());
+        GL.blendFunc(GL.SRC_ALPHA(), GL.ONE_MINUS_SRC_ALPHA());
+
         GL.enable(GL.LIGHT0());
         GL.enable(GL.DEPTH_TEST());
-
-        GL.lightModeli(GL.LIGHT_MODEL_TWO_SIDE(), GL.TRUE());
         GL.enable(GL.NORMALIZE());
-        GL.colorMaterial(GL.FRONT_AND_BACK(), GL.DIFFUSE());
-
-        GL.blendFunc(GL.SRC_ALPHA(), GL.ONE_MINUS_SRC_ALPHA());
         GL.enable(GL.BLEND());
     }
 

@@ -3,13 +3,9 @@ package de.dhbw.rahmlab.openglpolyglot;
 import de.dhbw.rahmlab.openglpolyglot.clibraries.Directives;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import com.oracle.svm.core.c.function.CEntryPointSetup;
-import de.dhbw.rahmlab.openglpolyglot.swing.ImagePanel;
 import de.orat.view3d.euclid3dviewapi.api.ViewerService;
 import de.orat.view3d.euclid3dviewapi.spi.iEuclidViewer3D;
 import java.awt.Color;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.JFrame;
@@ -34,44 +30,21 @@ public class Main {
         ResourceBundle.clearCache(); // needed after updating the locale
 
         var frame = new JFrame("OpenGLPolyglot");
-        frame.setSize(OpenGLRenderer.INITIAL_WIDTH, OpenGLRenderer.INITIAL_HEIGHT);
-        frame.getContentPane().setBackground(Color.WHITE);
+        var viewerComponent = new EuclidViewerComponent();
+        frame.add(viewerComponent);
+        frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        var imagePanel = new ImagePanel();
-        imagePanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                MouseListener.mouseX.get().write(e.getX());
-                MouseListener.mouseY.get().write(e.getY());
-            }
-        });
-        imagePanel.addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                MouseListener.onMouseMotion(e.getX(), e.getY());
-            }
-        });
-        imagePanel.addMouseWheelListener(new MouseAdapter() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                var scalePtr = OpenGLRenderer.scale.get();
-                scalePtr.write(scalePtr.read() * (-0.1f*e.getWheelRotation() + 1f));
-            }
-        });
-        frame.add(imagePanel);
         frame.setVisible(true);
 
-        while (frame.isVisible()) {
-            try {
-                Thread.sleep(10);
-                imagePanel.updatePixels();
-                OpenGLRenderer.width.get().write(frame.getWidth());
-                OpenGLRenderer.height.get().write(frame.getHeight());
-            } catch (Exception exception) {
-                System.err.println("Exception in UI loop: " + exception.getMessage());
-            }
+        try {
+            // wait for initialization of EuclidViewer3D
+            Thread.sleep(500);
+        } catch (InterruptedException exception) {
+            System.err.println("Main.initializeSwingFrame() was interrupted! " + exception.getMessage());
         }
+
+        viewerComponent.startUpdateLoop();
     }
 
     @CEntryPoint

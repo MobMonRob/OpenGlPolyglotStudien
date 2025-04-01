@@ -21,6 +21,12 @@ public class GLUT {
     @CConstant("GLUT_DEPTH")
     public static native int DEPTH();
 
+    @CConstant("GLUT_SCREEN_WIDTH")
+    public static native int SCREEN_WIDTH();
+
+    @CConstant("GLUT_SCREEN_HEIGHT")
+    public static native int SCREEN_HEIGHT();
+
     @CFunction("glutInit")
     public static native void init(CIntPointer argc, CCharPointerPointer argv);
 
@@ -122,6 +128,9 @@ public class GLUT {
 
     @CFunction("glutReshapeWindow")
     public static native void reshapeWindow(int width, int height);
+
+    @CFunction("glutGet")
+    public static native int get(int state);
 
     public interface Callback extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke();
