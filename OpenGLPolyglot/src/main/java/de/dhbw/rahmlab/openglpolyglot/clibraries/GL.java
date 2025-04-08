@@ -4,7 +4,9 @@ import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.constant.CConstant;
 import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
+import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CUnsigned;
+import org.graalvm.nativeimage.c.type.VoidPointer;
 import org.graalvm.word.PointerBase;
 
 @CContext(Directives.class)
@@ -116,6 +118,39 @@ public class GL {
 
     @CConstant("GL_NORMALIZE")
     public static native int NORMALIZE();
+
+    @CConstant("GL_POSITION")
+    public static native int POSITION();
+
+    @CConstant("GL_LIGHT_MODEL_AMBIENT")
+    public static native int LIGHT_MODEL_AMBIENT();
+
+    @CConstant("GL_COLOR_MATERIAL")
+    public static native int COLOR_MATERIAL();
+
+    @CConstant("GL_AMBIENT_AND_DIFFUSE")
+    public static native int AMBIENT_AND_DIFFUSE();
+
+    @CConstant("GL_FRAMEBUFFER")
+    public static native int FRAMEBUFFER();
+
+    @CConstant("GL_FRAMEBUFFER_COMPLETE")
+    public static native int FRAMEBUFFER_COMPLETE();
+
+    @CConstant("GL_TEXTURE_2D")
+    public static native int TEXTURE_2D();
+
+    @CConstant("GL_TEXTURE_MIN_FILTER")
+    public static native int TEXTURE_MIN_FILTER();
+
+    @CConstant("GL_TEXTURE_MAG_FILTER")
+    public static native int TEXTURE_MAG_FILTER();
+
+    @CConstant("GL_LINEAR")
+    public static native int LINEAR();
+
+    @CConstant("GL_COLOR_ATTACHMENT0")
+    public static native int COLOR_ATTACHMENT0();
 
     @CFunction("glClearColor")
     public static native void clearColor(float red, float green, float blue, float alpha);
@@ -242,4 +277,31 @@ public class GL {
 
     @CFunction("glColorMaterial")
     public static native void colorMaterial(int face, int mode);
+
+    @CFunction("glLightModelfv")
+    public static native void lightModelfv(int pname, CFloatPointer params);
+
+    @CFunction("glGenFramebuffers")
+    public static native void genFramebuffers(int n, @CUnsigned CIntPointer ids);
+
+    @CFunction("glBindFramebuffer")
+    public static native void bindFramebuffer(int target, @CUnsigned int framebuffer);
+
+    @CFunction("glGenTextures")
+    public static native void genTextures(int n, @CUnsigned CIntPointer textures);
+
+    @CFunction("glBindTexture")
+    public static native void bindTexture(int target, @CUnsigned int textures);
+
+    @CFunction("glTexImage2D")
+    public static native void texImage2D(int target, int level, int internalFormat, int width, int height, int border, int format, int type, VoidPointer data);
+
+    @CFunction("glTexParameteri")
+    public static native void texParameteri(int target, int pname, int param);
+
+    @CFunction("glFramebufferTexture2D")
+    public static native void framebufferTexture2D(int target, int attachment, int textarget, @CUnsigned int texture, int level);
+
+    @CFunction("glCheckFramebufferStatus")
+    public static native int checkFramebufferStatus(int target);
 }

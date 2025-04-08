@@ -18,6 +18,9 @@ public class GLUT {
     @CConstant("GLUT_RGB")
     public static native int RGB();
 
+    @CConstant("GLUT_RGBA")
+    public static native int RGBA();
+
     @CConstant("GLUT_DEPTH")
     public static native int DEPTH();
 
@@ -26,6 +29,9 @@ public class GLUT {
 
     @CConstant("GLUT_SCREEN_HEIGHT")
     public static native int SCREEN_HEIGHT();
+    
+    @CConstant("GLUT_DOUBLE")
+    public static native int DOUBLE();
 
     @CFunction("glutInit")
     public static native void init(CIntPointer argc, CCharPointerPointer argv);
@@ -131,6 +137,9 @@ public class GLUT {
 
     @CFunction("glutGet")
     public static native int get(int state);
+
+    @CFunction("glutHideWindow")
+    public static native void hideWindow();
 
     public interface Callback extends CFunctionPointer {
         @InvokeCFunctionPointer void invoke();
