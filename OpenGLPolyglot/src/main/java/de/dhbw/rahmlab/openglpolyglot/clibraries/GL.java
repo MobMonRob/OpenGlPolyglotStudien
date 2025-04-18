@@ -152,6 +152,15 @@ public class GL {
     @CConstant("GL_COLOR_ATTACHMENT0")
     public static native int COLOR_ATTACHMENT0();
 
+    @CConstant("GL_RENDERBUFFER")
+    public static native int RENDERBUFFER();
+
+    @CConstant("GL_DEPTH_COMPONENT24")
+    public static native int DEPTH_COMPONENT24();
+
+    @CConstant("GL_DEPTH_ATTACHMENT")
+    public static native int DEPTH_ATTACHMENT();
+
     @CFunction("glClearColor")
     public static native void clearColor(float red, float green, float blue, float alpha);
 
@@ -304,4 +313,16 @@ public class GL {
 
     @CFunction("glCheckFramebufferStatus")
     public static native int checkFramebufferStatus(int target);
+
+    @CFunction("glGenRenderbuffers")
+    public static native void genRenderbuffers(int n, @CUnsigned CIntPointer renderbuffers);
+
+    @CFunction("glBindRenderbuffer")
+    public static native void bindRenderbuffer(int target, int renderbuffer);
+
+    @CFunction("glRenderbufferStorage")
+    public static native void renderbufferStorage(int target, int internalformat, int width, int height);
+
+    @CFunction("glFramebufferRenderbuffer")
+    public static native void framebufferRenderbuffer(int target, int attachment, int renderbuffertarget, int renderbuffer);
 }

@@ -54,6 +54,9 @@ public class OpenGLRenderer {
     public static final CGlobalData<CCharPointer> pixelMap
             = CGlobalDataFactory.createBytes(() -> MAX_WIDTH * MAX_HEIGHT * 4);
 
+    public static final CGlobalData<@CUnsigned CIntPointer> depthRenderbuffer
+            = CGlobalDataFactory.createBytes(() -> 4);
+
     public static EuclidViewer3D viewer;
 
     public static void initialize() {
@@ -64,7 +67,6 @@ public class OpenGLRenderer {
 
         initializeWindow();
         GLUT.hideWindow();
-        setUpLightingAndMaterials();
         setupFBO();
 
         while (true) {
@@ -106,6 +108,8 @@ public class OpenGLRenderer {
         GL.genFramebuffers(1, fbo.get());
         GL.bindFramebuffer(GL.FRAMEBUFFER(), fbo.get().read());
 
+        setUpLightingAndMaterials();
+
         GL.genTextures(1, texture.get());
         GL.bindTexture(GL.TEXTURE_2D(), texture.get().read());
         GL.texImage2D(GL.TEXTURE_2D(), 0, GL.RGBA(), MAX_WIDTH, MAX_HEIGHT, 0, GL.RGBA(), GL.UNSIGNED_BYTE(), WordFactory.nullPointer());
@@ -113,6 +117,11 @@ public class OpenGLRenderer {
         GL.texParameteri(GL.TEXTURE_2D(), GL.TEXTURE_MAG_FILTER(), GL.LINEAR());
 
         GL.framebufferTexture2D(GL.FRAMEBUFFER(), GL.COLOR_ATTACHMENT0(), GL.TEXTURE_2D(), texture.get().read(), 0);
+
+        GL.genRenderbuffers(1, depthRenderbuffer.get());
+        GL.bindRenderbuffer(GL.RENDERBUFFER(), depthRenderbuffer.get().read());
+        GL.renderbufferStorage(GL.RENDERBUFFER(), GL.DEPTH_COMPONENT24(), MAX_WIDTH, MAX_HEIGHT);
+        GL.framebufferRenderbuffer(GL.FRAMEBUFFER(), GL.DEPTH_ATTACHMENT(), GL.RENDERBUFFER(), depthRenderbuffer.get().read());
 
         if (GL.checkFramebufferStatus(GL.FRAMEBUFFER()) != GL.FRAMEBUFFER_COMPLETE()) {
             System.out.println("FBO not complete!");
