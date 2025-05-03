@@ -81,7 +81,8 @@ public class EuclidViewer3D implements iEuclidViewer3D {
     @Override
     public long addMesh(String path, Matrix4d transform) {
         var scene = AI.importFile(CTypeConversion.toCString(path).get(),
-                                  AI.processPreset_TargetRealtime_MaxQuality());
+                                  AI.processPreset_TargetRealtime_MaxQuality() |
+                                  AI.process_GenBoundingBoxes());
         return addNode(new Mesh(scene, transform));
     }
 

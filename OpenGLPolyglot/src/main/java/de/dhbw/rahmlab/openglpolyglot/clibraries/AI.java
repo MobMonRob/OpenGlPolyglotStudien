@@ -24,6 +24,9 @@ public class AI {
 
     @CConstant("aiProcessPreset_TargetRealtime_MaxQuality")
     public static native int processPreset_TargetRealtime_MaxQuality();
+    
+    @CConstant("aiProcess_GenBoundingBoxes")
+    public static native int process_GenBoundingBoxes();
 
     @CFunction("aiImportFile")
     public static native Scene importFile(CCharPointer pFile, @CUnsigned int pFlags);

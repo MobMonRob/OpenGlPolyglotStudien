@@ -38,12 +38,12 @@ public class AABB implements iAABB {
 
     public final void calculateAABBFor(Collection<Shape> shapes) {
         var nodeAABBs = shapes.stream().map(node -> node.getAABB()).toList();
-        minX = nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinX()).min().orElse(0);
-        minY = nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinY()).min().orElse(0);
-        minZ = nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinZ()).min().orElse(0);
-        maxX = nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMaxX()).max().orElse(0);
-        maxY = nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMaxY()).max().orElse(0);
-        maxZ = nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMaxZ()).max().orElse(0);
+        minX = Math.min(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinX()).min().orElse(0));
+        minY = Math.min(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinY()).min().orElse(0));
+        minZ = Math.min(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinZ()).min().orElse(0));
+        maxX = Math.max(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMaxX()).max().orElse(0));
+        maxY = Math.max(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMaxY()).max().orElse(0));
+        maxZ = Math.max(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMaxZ()).max().orElse(0));
         outlines = calculateOutlines();
     }
 
@@ -103,11 +103,14 @@ public class AABB implements iAABB {
             }
         }
 
-        var mesuringScaleX = Math.pow(10, (int) Math.log10(Math.max(maxX, -minX)) + 1);
-        var mesuringScaleY = Math.pow(10, (int) Math.log10(Math.max(maxY, -minZ)) + 1);
-        var mesuringScaleZ = Math.pow(10, (int) Math.log10(Math.max(maxZ, -minY)) + 1);
+        var mesuringScaleX = Math.pow(5, Math.ceil(log5(Math.max(maxX, -minX))));
+        var mesuringScaleY = Math.pow(5, Math.ceil(log5(Math.max(maxY, -minY))));
+        var mesuringScaleZ = Math.pow(5, Math.ceil(log5(Math.max(maxZ, -minZ))));
 
-        var mesuringSubsections = new double[] { -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1 };
+        var mesuringSubsections = new double[] {
+            -1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1,
+            0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1
+        };
 
         for (var subsection : mesuringSubsections) {
             drawMeasuringLines(mesuringScaleX * subsection,
@@ -251,5 +254,10 @@ public class AABB implements iAABB {
             }
         }
         return true;
+    }
+    
+    public static double log5(double n) {
+        final double LOG_5 = 2.321928095;
+        return Math.log(n) / LOG_5;
     }
 }
