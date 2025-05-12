@@ -34,9 +34,10 @@ public class EuclidViewer3D implements iEuclidViewer3D {
     }
 
     @Override
-    public void close() {
+    public boolean close() {
         nodes.clear();
         nodesCount = 0L;
+        return true;
     }
 
     @Override
