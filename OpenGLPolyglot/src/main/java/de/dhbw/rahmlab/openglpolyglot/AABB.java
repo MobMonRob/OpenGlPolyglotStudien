@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Tuple3d;
 import org.jogamp.vecmath.Vector3d;
 
 public class AABB implements iAABB {
@@ -38,6 +39,8 @@ public class AABB implements iAABB {
 
     public final void calculateAABBFor(Collection<Shape> shapes) {
         var nodeAABBs = shapes.stream().map(node -> node.getAABB()).toList();
+        // Math.min(0, ...) wird nur verwendet, um den Koordinatenursprung in die AABB, die alle Objekte enthält, zu integrieren.
+        // Das kann entfernt werden, falls es nicht nötig sein sollte.
         minX = Math.min(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinX()).min().orElse(0));
         minY = Math.min(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinY()).min().orElse(0));
         minZ = Math.min(0, nodeAABBs.stream().mapToDouble(nodeAABB -> nodeAABB.getMinZ()).min().orElse(0));
@@ -86,8 +89,14 @@ public class AABB implements iAABB {
 
         for (var plane : planes) {
             try {
-                points.addAll(List.of(plane.cut(line)));
-            } catch (CutFailedException ex) {
+                for (var point : plane.cut(line)) {
+                    if (isInsideAABB(point)) {
+                        points.add(point);
+                    }
+                }
+            } catch (CutFailedException exception) {
+                System.err.println("CutFailedException caught in clip(Line): "
+                        + exception.getMessage());
             }
         }
 
@@ -217,6 +226,12 @@ public class AABB implements iAABB {
             new Point3d(maxX, maxY, minZ),
             new Point3d(maxX, maxY, maxZ)
         };
+    }
+    
+    private boolean isInsideAABB(Tuple3d point) {
+        return point.x >= minX && point.x <= maxX
+            && point.y >= minY && point.y <= maxY
+            && point.z >= minZ && point.z <= maxZ;
     }
 
     public double getMinX() {
