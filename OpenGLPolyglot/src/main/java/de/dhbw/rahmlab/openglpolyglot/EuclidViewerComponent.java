@@ -70,7 +70,9 @@ public class EuclidViewerComponent extends JPanel {
             } catch (InterruptedException _) {
                 System.err.println("Image update loop interrupted!");
             } catch (Exception exception) {
-                System.err.println("Exception in Image update loop: " + exception.getMessage());
+                System.err.println(exception.getClass().getName()
+                        + " in image update loop: "
+                        + exception.getMessage());
             }
         }
     }

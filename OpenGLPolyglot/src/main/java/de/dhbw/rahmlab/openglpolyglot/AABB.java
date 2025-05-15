@@ -64,7 +64,9 @@ public class AABB implements iAABB {
 
             try {
                 points.addAll(List.of(plane.cut(line)));
-            } catch (CutFailedException ex) {
+            } catch (CutFailedException exception) {
+                System.err.println("CutFailedException caught in clip(Plane): "
+                        + exception.getMessage());
             }
         }
 
@@ -112,19 +114,19 @@ public class AABB implements iAABB {
             }
         }
 
-        var mesuringScaleX = Math.pow(5, Math.ceil(log5(Math.max(maxX, -minX))));
-        var mesuringScaleY = Math.pow(5, Math.ceil(log5(Math.max(maxY, -minY))));
-        var mesuringScaleZ = Math.pow(5, Math.ceil(log5(Math.max(maxZ, -minZ))));
+        var measuringScaleX = Math.pow(5, Math.ceil(log5(Math.max(maxX, -minX))));
+        var measuringScaleY = Math.pow(5, Math.ceil(log5(Math.max(maxY, -minY))));
+        var measuringScaleZ = Math.pow(5, Math.ceil(log5(Math.max(maxZ, -minZ))));
 
-        var mesuringSubsections = new double[] {
+        var measuringSubsections = new double[] {
             -1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1,
             0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1
         };
 
-        for (var subsection : mesuringSubsections) {
-            drawMeasuringLines(mesuringScaleX * subsection,
-                               mesuringScaleY * subsection,
-                               mesuringScaleZ * subsection);
+        for (var subsection : measuringSubsections) {
+            drawMeasuringLines(measuringScaleX * subsection,
+                               measuringScaleY * subsection,
+                               measuringScaleZ * subsection);
         }
     }
 
@@ -136,13 +138,13 @@ public class AABB implements iAABB {
             new Point3d(x, maxY, minZ),
             new Point3d(x, maxY, maxZ),
         };
-        var yMesuringPoints = new Point3d[] {
+        var yMeasuringPoints = new Point3d[] {
             new Point3d(minX, y, minZ),
             new Point3d(minX, y, maxZ),
             new Point3d(maxX, y, minZ),
             new Point3d(maxX, y, maxZ),
         };
-        var zMesuringPoints = new Point3d[] {
+        var zMeasuringPoints = new Point3d[] {
             new Point3d(minX, minY, z),
             new Point3d(minX, maxY, z),
             new Point3d(maxX, minY, z),
@@ -150,20 +152,20 @@ public class AABB implements iAABB {
         };
 
         if (x >= minX && x <= maxX) drawMeasuringLines(x, xMeasuringPoints);
-        if (y >= minY && y <= maxY) drawMeasuringLines(y, yMesuringPoints);
-        if (z >= minZ && z <= maxZ) drawMeasuringLines(z, zMesuringPoints);
+        if (y >= minY && y <= maxY) drawMeasuringLines(y, yMeasuringPoints);
+        if (z >= minZ && z <= maxZ) drawMeasuringLines(z, zMeasuringPoints);
     }
 
     private void drawMeasuringLines(double measurement, Point3d[] measuringPoints) {
 
-        var mesuringLines = new RasterizedLine[] {
+        var measuringLines = new RasterizedLine[] {
             new RasterizedLine(measuringPoints[0], measuringPoints[1], Color.black, 1),
             new RasterizedLine(measuringPoints[0], measuringPoints[2], Color.black, 1),
             new RasterizedLine(measuringPoints[1], measuringPoints[3], Color.black, 1),
             new RasterizedLine(measuringPoints[2], measuringPoints[3], Color.black, 1),
         };
 
-        for (var line : mesuringLines) {
+        for (var line : measuringLines) {
             if (!isLineInForeground(line.getStart(), line.getEnd())) {
                 line.draw();
             }
