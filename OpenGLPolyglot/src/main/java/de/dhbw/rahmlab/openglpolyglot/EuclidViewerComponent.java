@@ -66,7 +66,7 @@ public class EuclidViewerComponent extends JPanel {
                 updatePixels(width.read(), height.read());
                 width.write(this.getWidth());
                 height.write(this.getHeight());
-                Thread.sleep(10);
+                Thread.sleep(1);
             } catch (InterruptedException _) {
                 System.err.println("Image update loop interrupted!");
             } catch (Exception exception) {

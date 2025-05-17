@@ -160,8 +160,6 @@ public class OpenGLRenderer {
             latestWidth = currentWidth;
             latestHeight = currentHeight;
         }
-
-        GLUT.postRedisplay();
     }
 
     private static void reshape(int width, int height) {
