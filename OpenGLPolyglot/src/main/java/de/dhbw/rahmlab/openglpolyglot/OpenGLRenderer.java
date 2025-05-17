@@ -149,7 +149,6 @@ public class OpenGLRenderer {
 
         updatePixelMap(width.get().read(), height.get().read());
         GL.bindFramebuffer(GL.FRAMEBUFFER(), 0);
-        GLUT.postRedisplay();
     }
 
     private static void idle() {
