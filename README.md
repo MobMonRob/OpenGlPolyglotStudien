@@ -16,7 +16,7 @@
   - Path: `<pfad zum repo>\OpenGLPolyglot\C Libraries Windows\bin\x64`
   - INCLUDE: `<pfad zum repo>\OpenGLPolyglot\C Libraries Windows\headers`
   - LIB: `<pfad zum repo>\OpenGLPolyglot\C Libraries Windows\lib\x64`
-- Auf Windows funktioniert nur der Branch `opengl-1-1`, daher auf diesen Branch switchen
+- Auf Windows funktioniert nur der Branch `legacy-opengl-compatibility`, daher auf diesen Branch switchen
 
 ## Installation der Java-Abhängigkeiten:
 
