@@ -34,7 +34,7 @@ public class GLUT {
 
     @CConstant("GLUT_SCREEN_HEIGHT")
     public static native int SCREEN_HEIGHT();
-    
+
     @CConstant("GLUT_DOUBLE")
     public static native int DOUBLE();
 

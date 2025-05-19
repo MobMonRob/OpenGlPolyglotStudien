@@ -12,13 +12,12 @@ import de.orat.view3d.euclid3dviewapi.api.ViewerService;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
+import org.graalvm.nativeimage.c.function.CEntryPointLiteral;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CCharPointerPointer;
 import org.graalvm.nativeimage.c.type.CFloatPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
-import org.graalvm.nativeimage.c.type.CUnsigned;
-import org.graalvm.word.WordFactory;
 
 @CContext(Directives.class)
 public class OpenGLRenderer {
@@ -45,14 +44,17 @@ public class OpenGLRenderer {
     public static final CGlobalData<CIntPointer> height
             = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<@CUnsigned CIntPointer> fbo
-            = CGlobalDataFactory.createBytes(() -> 4);
-
-    public static final CGlobalData<@CUnsigned CIntPointer> texture
-            = CGlobalDataFactory.createBytes(() -> 4);
-
     public static final CGlobalData<CCharPointer> pixelMap
             = CGlobalDataFactory.createBytes(() -> MAX_WIDTH * MAX_HEIGHT * 4);
+
+    private static final CEntryPointLiteral<GLUT.Callback> displayCallback
+            = CEntryPointLiteral.create(OpenGLRenderer.class, "display");
+
+    private static final CEntryPointLiteral<GLUT.Callback> idleCallback
+            = CEntryPointLiteral.create(OpenGLRenderer.class, "idle");
+
+    private static final CEntryPointLiteral<GLUT.Callback2i> reshapeCallback
+            = CEntryPointLiteral.create(OpenGLRenderer.class, "reshape", int.class, int.class);
 
     public static EuclidViewer3D viewer;
 
@@ -65,14 +67,15 @@ public class OpenGLRenderer {
         zoom.get().write(1f);
 
         initializeWindow();
-        GLUT.hideWindow();
         setUpLightingAndMaterials();
-        setupFBO();
 
-        while (true) {
-            idle();
-            display();
-        }
+        GLUT.displayFunc(displayCallback.getFunctionPointer());
+        GLUT.idleFunc(idleCallback.getFunctionPointer());
+        GLUT.reshapeFunc(reshapeCallback.getFunctionPointer());
+        GLUT.mouseFunc(MouseListener.mouseClickCallback.getFunctionPointer());
+        GLUT.motionFunc(MouseListener.mouseMotionCallback.getFunctionPointer());
+        
+        GLUT.mainLoop();
     }
 
     private static void initializeWindow() {
@@ -81,9 +84,10 @@ public class OpenGLRenderer {
         argumentsSize.write(0);
 
         GLUT.init(argumentsSize, arguments);
-        GLUT.initDisplayMode(GLUT.DOUBLE() | GLUT.RGBA() | GLUT.DEPTH());
-        GLUT.initWindowSize(1, 1);
-        GLUT.initWindowPosition(0, 0);
+        GLUT.initDisplayMode(GLUT.SINGLE() | GLUT.RGB() | GLUT.DEPTH());
+        GLUT.initWindowSize(INITIAL_WIDTH, INITIAL_HEIGHT);
+        GLUT.initWindowPosition(GLUT.get(GLUT.SCREEN_WIDTH())/2 - INITIAL_WIDTH/2,
+                                GLUT.get(GLUT.SCREEN_HEIGHT())/2 - INITIAL_HEIGHT/2);
 
         try (var title = CTypeConversion.toCString("GraalVM OpenGL")) {
             GLUT.createWindow(title.get());
@@ -104,32 +108,13 @@ public class OpenGLRenderer {
         GL.enable(GL.BLEND());
     }
 
-    private static void setupFBO() {
-        GL.genFramebuffers(1, fbo.get());
-        GL.bindFramebuffer(GL.FRAMEBUFFER(), fbo.get().read());
-
-        GL.genTextures(1, texture.get());
-        GL.bindTexture(GL.TEXTURE_2D(), texture.get().read());
-        GL.texImage2D(GL.TEXTURE_2D(), 0, GL.RGBA(), MAX_WIDTH, MAX_HEIGHT, 0, GL.RGBA(), GL.UNSIGNED_BYTE(), WordFactory.nullPointer());
-        GL.texParameteri(GL.TEXTURE_2D(), GL.TEXTURE_MIN_FILTER(), GL.LINEAR());
-        GL.texParameteri(GL.TEXTURE_2D(), GL.TEXTURE_MAG_FILTER(), GL.LINEAR());
-
-        GL.framebufferTexture2D(GL.FRAMEBUFFER(), GL.COLOR_ATTACHMENT0(), GL.TEXTURE_2D(), texture.get().read(), 0);
-
-        if (GL.checkFramebufferStatus(GL.FRAMEBUFFER()) != GL.FRAMEBUFFER_COMPLETE()) {
-            System.out.println("FBO not complete!");
-        }
-
-        GL.bindFramebuffer(GL.FRAMEBUFFER(), 0);
-    }
-
+    @SuppressWarnings("unused") // implicitly called with this.displayCallback
     @CEntryPoint
     @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
-                        epilogue = CEntryPointSetup.LeaveEpilogue.class)
+            epilogue = CEntryPointSetup.LeaveEpilogue.class)
     private static void display() {
         var scale = zoom.get().read();
-        GL.bindFramebuffer(GL.FRAMEBUFFER(), fbo.get().read());
-        reshape(width.get().read(), height.get().read());
+
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
         GL.loadIdentity();
         
@@ -144,20 +129,32 @@ public class OpenGLRenderer {
         Shape.drawAll(viewer.getNodes().values());
         ((AABB) viewer.getAABB()).draw();
 
-        updatePixelMap(width.get().read(), height.get().read());
-        GL.bindFramebuffer(GL.FRAMEBUFFER(), 0);
+        GL.flush();
     }
 
+    @SuppressWarnings("unused") // implicitly called with this.idleCallback
+    @CEntryPoint
+    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
+            epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void idle() {
+
         var currentWidth = width.get().read();
         var currentHeight = height.get().read();
 
         if (currentWidth != latestWidth || currentHeight != latestHeight) {
+            GLUT.reshapeWindow(currentWidth, currentHeight);
             latestWidth = currentWidth;
             latestHeight = currentHeight;
         }
+
+        updatePixelMap(currentWidth, currentHeight);
+        GLUT.postRedisplay();
     }
 
+    @SuppressWarnings("unused") // implicitly called with this.reshapeCallback
+    @CEntryPoint
+    @CEntryPointOptions(prologue = CEntryPointSetup.EnterCreateIsolatePrologue.class,
+            epilogue = CEntryPointSetup.LeaveTearDownIsolateEpilogue.class)
     private static void reshape(int width, int height) {
         double ratio = (double) width / (double) height;
         GL.viewport(0, 0, width, height);
@@ -168,6 +165,6 @@ public class OpenGLRenderer {
     }
 
     private static void updatePixelMap(int width, int height) {
-        GL.readPixels(0, 0, width, height, GL.RGBA(), GL.UNSIGNED_BYTE(), pixelMap.get().addressOf(0));
+        GL.readPixels(0, 0, width, height, GL.RGBA(), GL.UNSIGNED_BYTE(), pixelMap.get());
     }
 }

@@ -15,8 +15,6 @@ import javax.swing.JPanel;
 public class EuclidViewerComponent extends JPanel {
 
     private BufferedImage image;
-    private int mouseX;
-    private int mouseY;
 
     public EuclidViewerComponent() {
 
@@ -26,24 +24,15 @@ public class EuclidViewerComponent extends JPanel {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                mouseX = e.getX();
-                mouseY = e.getY();
+                MouseListener.mouseX.get().write(e.getX());
+                MouseListener.mouseY.get().write(e.getY());
             }
         });
 
         this.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                var xRotationPtr = OpenGLRenderer.xRotation.get();
-                var zRotationPtr = OpenGLRenderer.zRotation.get();
-                var deltaX = e.getX() - mouseX;
-                var deltaY = e.getY() - mouseY;
-                // rotiere entlang der Z-Achse, wenn sich Maus in X-Richtung bewegt
-                xRotationPtr.write((deltaY + xRotationPtr.read() + 360) % 360);
-                // rotiere entlang der X-Achse, wenn sich Maus in Y-Richtung bewegt
-                zRotationPtr.write((deltaX + zRotationPtr.read() + 360) % 360);
-                mouseX = e.getX();
-                mouseY = e.getY();
+                MouseListener.onMouseMotion(e.getX(), e.getY());
             }
         });
 
