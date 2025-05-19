@@ -136,12 +136,6 @@ public class GL {
     @CConstant("GL_AMBIENT_AND_DIFFUSE")
     public static native int AMBIENT_AND_DIFFUSE();
 
-    @CConstant("GL_FRAMEBUFFER")
-    public static native int FRAMEBUFFER();
-
-    @CConstant("GL_FRAMEBUFFER_COMPLETE")
-    public static native int FRAMEBUFFER_COMPLETE();
-
     @CConstant("GL_TEXTURE_2D")
     public static native int TEXTURE_2D();
 
@@ -153,9 +147,6 @@ public class GL {
 
     @CConstant("GL_LINEAR")
     public static native int LINEAR();
-
-    @CConstant("GL_COLOR_ATTACHMENT0")
-    public static native int COLOR_ATTACHMENT0();
 
     @CFunction("glClearColor")
     public static native void clearColor(float red, float green, float blue, float alpha);
