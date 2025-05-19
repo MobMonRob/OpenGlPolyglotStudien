@@ -182,20 +182,20 @@ public class AABB implements iAABB {
 
     private boolean isLineInForeground(Point3d start, Point3d end) {
         var xRotation = OpenGLRenderer.xRotation.get().read();
-        var yRotation = OpenGLRenderer.yRotation.get().read();
+        var zRotation = OpenGLRenderer.zRotation.get().read();
 
-        return (isInRange(xRotation,   0, 180) && isEqual(start.y, end.y, maxY))
+        return (isInRange(xRotation,   0, 180) && isEqual(start.z, end.z, maxZ))
             //     => Decke ist im Vordergrund & Linie ist Decken-Linie
-            || (isInRange(xRotation, 180, 360) && isEqual(start.y, end.y, minY))
+            || (isInRange(xRotation, 180, 360) && isEqual(start.z, end.z, minZ))
             //     => Boden ist im Vordergrund & Linie ist Boden-Linie
-            || (isInRange(yRotation,   0,  90) && (isEqual(start.z, end.z, maxZ) || isEqual(start.x, end.x, minX)))
-            //     => vordere xy-Ebene und hintere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
-            || (isInRange(yRotation,  90, 180) && (isEqual(start.x, end.x, minX) || isEqual(start.z, end.z, minZ)))
-            //     => hintere yz-Ebene und vordere xy-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
-            || (isInRange(yRotation, 180, 270) && (isEqual(start.z, end.z, minZ) || isEqual(start.x, end.x, maxX)))
-            //     => hintere xy-Ebene und vordere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
-            || (isInRange(yRotation, 270, 360) && (isEqual(start.x, end.x, maxX) || isEqual(start.z, end.z, maxZ)));
-            //     => vordere yz-Ebene und vordere xy-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            || (isInRange(zRotation,   0,  90) && (isEqual(start.x, end.x, minX) || isEqual(start.y, end.y, minY)))
+            //     => hintere xz-Ebene und hintere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            || (isInRange(zRotation,  90, 180) && (isEqual(start.x, end.x, minX) || isEqual(start.y, end.y, maxY)))
+            //     => hintere xz-Ebene und vordere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            || (isInRange(zRotation, 180, 270) && (isEqual(start.x, end.x, maxX) || isEqual(start.y, end.y, maxY)))
+            //     => vordere xz-Ebene und vordere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
+            || (isInRange(zRotation, 270, 360) && (isEqual(start.x, end.x, maxX) || isEqual(start.y, end.y, minY)));
+            //     => vordere xz-Ebene und hintere yz-Ebene im Vordergrund & Linie ist in einer der Beiden Ebenen
     }
 
     private RasterizedLine[] calculateOutlines() {

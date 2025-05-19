@@ -24,7 +24,16 @@ public class AI {
 
     @CConstant("aiProcessPreset_TargetRealtime_MaxQuality")
     public static native int processPreset_TargetRealtime_MaxQuality();
-    
+
+    @CConstant("aiProcessPreset_TargetRealtime_Fast")
+    public static native int processPreset_TargetRealtime_Fast();
+
+    @CConstant("aiProcess_OptimizeMeshes")
+    public static native int process_OptimizeMeshes();
+
+    @CConstant("aiProcess_OptimizeGraph")
+    public static native int process_OptimizeGraph();
+
     @CConstant("aiProcess_GenBoundingBoxes")
     public static native int process_GenBoundingBoxes();
 

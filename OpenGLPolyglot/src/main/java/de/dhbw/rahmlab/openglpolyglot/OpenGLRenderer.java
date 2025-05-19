@@ -33,7 +33,7 @@ public class OpenGLRenderer {
     public static final CGlobalData<CFloatPointer> xRotation
             = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<CFloatPointer> yRotation
+    public static final CGlobalData<CFloatPointer> zRotation
             = CGlobalDataFactory.createBytes(() -> 4);
 
     public static final CGlobalData<CFloatPointer> scale
@@ -63,6 +63,8 @@ public class OpenGLRenderer {
         viewer = (EuclidViewer3D) ViewerService.getInstance().getViewer().get();
         width.get().write(INITIAL_WIDTH);
         height.get().write(INITIAL_HEIGHT);
+        xRotation.get().write(25f);
+        zRotation.get().write(225f);
         scale.get().write(1f);
 
         initializeWindow();
@@ -139,10 +141,14 @@ public class OpenGLRenderer {
         reshape(width.get().read(), height.get().read());
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
         GL.loadIdentity();
+        
+        // rotate the coordinate system so the z-axis is up, instead of y:
+        GL.rotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 
+        // apply zoom & roation from user input:
         GL.scalef(scalef, scalef, scalef);
         GL.rotatef(xRotation.get().read(), 1f, 0f, 0f);
-        GL.rotatef(yRotation.get().read(), 0f, 1f, 0f);
+        GL.rotatef(zRotation.get().read(), 0f, 0f, 1f);
 
         Shape.drawAll(viewer.getNodes().values());
         ((AABB) viewer.getAABB()).draw();

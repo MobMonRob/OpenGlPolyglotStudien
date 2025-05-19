@@ -32,13 +32,13 @@ public class EuclidViewerComponent extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 var xRotationPtr = OpenGLRenderer.xRotation.get();
-                var yRotationPtr = OpenGLRenderer.yRotation.get();
+                var zRotationPtr = OpenGLRenderer.zRotation.get();
                 var deltaX = e.getX() - mouseX;
                 var deltaY = e.getY() - mouseY;
-                // rotiere entlang der Y-Achse, wenn sich Maus in X-Richtung bewegt
+                // rotiere entlang der Z-Achse, wenn sich Maus in X-Richtung bewegt
                 xRotationPtr.write((deltaY + xRotationPtr.read() + 360) % 360);
                 // rotiere entlang der X-Achse, wenn sich Maus in Y-Richtung bewegt
-                yRotationPtr.write((deltaX + yRotationPtr.read() + 360) % 360);
+                zRotationPtr.write((deltaX + zRotationPtr.read() + 360) % 360);
                 mouseX = e.getX();
                 mouseY = e.getY();
             }
