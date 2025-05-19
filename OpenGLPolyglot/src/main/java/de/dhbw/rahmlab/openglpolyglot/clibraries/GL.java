@@ -9,6 +9,11 @@ import org.graalvm.nativeimage.c.type.CUnsigned;
 import org.graalvm.nativeimage.c.type.VoidPointer;
 import org.graalvm.word.PointerBase;
 
+/**
+ * Constants, functions and structs of the OpenGL API.
+ * These bindings do not provide every feature of the API and may have to be
+ * expanded when needed.
+ */
 @CContext(Directives.class)
 public class GL {
     @CConstant("GL_FLAT")

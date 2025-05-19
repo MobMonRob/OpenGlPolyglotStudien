@@ -14,7 +14,9 @@ import org.graalvm.nativeimage.c.type.CUnsigned;
 import org.graalvm.word.PointerBase;
 
 /**
- * constants, functions and structs of the AssImp (Asset Importer) library
+ * Constants, functions and structs of the AssImp (Asset Importer) library.
+ * These bindings do not provide every feature of the library and may have to be
+ * expanded when needed.
  */
 @CContext(Directives.class)
 public class AI {

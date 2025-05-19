@@ -7,6 +7,11 @@ import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CUnsigned;
 import org.graalvm.word.PointerBase;
 
+/**
+ * Constants, functions and structs of the FTGL library.
+ * These bindings do not provide every feature of the library and may have to be
+ * expanded when needed.
+ */
 @CContext(Directives.class)
 public class FTGL {
 

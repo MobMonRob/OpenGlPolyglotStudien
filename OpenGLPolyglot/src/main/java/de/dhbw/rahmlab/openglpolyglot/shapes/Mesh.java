@@ -122,52 +122,33 @@ public final class Mesh implements Shape {
         GL.end();
     }
 
-    private void applyMaterial(AI.Material mtl) {
+    private void applyMaterial(AI.Material material) {
 
         var colorComponents = StackValue.get(4, CFloatPointer.class);
 
-        var diffuse  = StackValue.get(1, AI.Color4D.class);
-        var specular = StackValue.get(1, AI.Color4D.class);
-        var ambient  = StackValue.get(1, AI.Color4D.class);
-        var emission = StackValue.get(1, AI.Color4D.class);
-
+        var diffuse   = StackValue.get(1, AI.Color4D.class);
+        var specular  = StackValue.get(1, AI.Color4D.class);
+        var ambient   = StackValue.get(1, AI.Color4D.class);
+        var emission  = StackValue.get(1, AI.Color4D.class);
         var shininess = StackValue.get(1, CFloatPointer.class);
         var strength  = StackValue.get(1, CFloatPointer.class);
-
         var twoSided  = StackValue.get(1, CIntPointer.class);
         var wireframe = StackValue.get(1, CIntPointer.class);
 
         setFloatArrayValues(colorComponents, 0.8f, 0.8f, 0.8f, 1.0f);
-        if (AI.getMaterialColor(mtl, CTypeConversion.toCString("$clr.diffuse").get(), 0, 0, diffuse) == AI.SUCCESS()) {
-            fillFloatArrayWithColor(diffuse, colorComponents);
-        }
-        GL.materialfv(GL.FRONT_AND_BACK(), GL.DIFFUSE(), colorComponents);
+        trySetMaterialColor(material, "diffuse", diffuse, colorComponents, GL.DIFFUSE());
 
         setFloatArrayValues(colorComponents, 0.0f, 0.0f, 0.0f, 1.0f);
-        if (AI.getMaterialColor(mtl, CTypeConversion.toCString("$clr.specular").get(), 0, 0, specular) == AI.SUCCESS()) {
-            fillFloatArrayWithColor(specular, colorComponents);
-        }
-        GL.materialfv(GL.FRONT_AND_BACK(), GL.SPECULAR(), colorComponents);
+        trySetMaterialColor(material, "specular", specular, colorComponents, GL.SPECULAR());
 
         setFloatArrayValues(colorComponents, 0.2f, 0.2f, 0.2f, 1.0f);
-        if (AI.getMaterialColor(mtl, CTypeConversion.toCString("$clr.ambient").get(), 0, 0, ambient) == AI.SUCCESS()) {
-            fillFloatArrayWithColor(ambient, colorComponents);
-        }
-        GL.materialfv(GL.FRONT_AND_BACK(), GL.AMBIENT(), colorComponents);
+        trySetMaterialColor(material, "ambient", ambient, colorComponents, GL.AMBIENT());
 
         setFloatArrayValues(colorComponents, 0.0f, 0.0f, 0.0f, 1.0f);
-        if (AI.getMaterialColor(mtl, CTypeConversion.toCString("$clr.emissive").get(), 0, 0, emission) == AI.SUCCESS()) {
-            fillFloatArrayWithColor(emission, colorComponents);
-        }
-        GL.materialfv(GL.FRONT_AND_BACK(), GL.EMISSION(), colorComponents);
+        trySetMaterialColor(material, "emissive", emission, colorComponents, GL.EMISSION());
 
-        var max = StackValue.get(1, CIntPointer.class);
-        max.write(1);
-        var ret1 = AI.getMaterialFloatArray(mtl, CTypeConversion.toCString("$mat.shininess").get(), 0, 0, shininess, max);
-        if (ret1 == AI.SUCCESS()) {
-            max.write(1);
-            var ret2 = AI.getMaterialFloatArray(mtl, CTypeConversion.toCString("$mat.shinpercent").get(), 0, 0, strength, max);
-            if (ret2 == AI.SUCCESS()) {
+        if (tryGetMaterialValue(material, "shininess", shininess)) {
+            if (tryGetMaterialValue(material, "shinpercent", strength)) {
                 GL.materialf(GL.FRONT_AND_BACK(), GL.SHININESS(), shininess.read() * strength.read());
             } else {
                 GL.materialf(GL.FRONT_AND_BACK(), GL.SHININESS(), shininess.read());
@@ -178,21 +159,40 @@ public final class Mesh implements Shape {
             GL.materialfv(GL.FRONT_AND_BACK(), GL.SPECULAR(), colorComponents);
         }
 
-        max.write(1);
-        int fillMode;
-        if (AI.getMaterialIntegerArray(mtl, CTypeConversion.toCString("$mat.wireframe").get(), 0, 0, wireframe, max) == AI.SUCCESS()) {
-            fillMode = wireframe.read() > 0 ? GL.LINE() : GL.FILL();
+        if (tryGetMaterialValue(material, "wireframe", wireframe) && wireframe.read() > 0) {
+            GL.polygonMode(GL.FRONT_AND_BACK(), GL.LINE());
         } else {
-            fillMode = GL.FILL();
+            GL.polygonMode(GL.FRONT_AND_BACK(), GL.FILL());
         }
-        GL.polygonMode(GL.FRONT_AND_BACK(), fillMode);
 
-        max.write(1);
-        if ((AI.getMaterialIntegerArray(mtl, CTypeConversion.toCString("$mat.twosided").get(), 0, 0, twoSided, max) == AI.SUCCESS()) && twoSided.read() == 1) {
+        if (tryGetMaterialValue(material, "twosided", twoSided) && twoSided.read() == 1) {
             GL.disable(GL.CULL_FACE());
         } else {
             GL.enable(GL.CULL_FACE());
         }
+    }
+    
+    private void trySetMaterialColor(AI.Material material, String key, AI.Color4D color, CFloatPointer colorComponents, int materialType) {
+        if (AI.getMaterialColor(material, CTypeConversion.toCString("$clr." + key).get(), 0, 0, color) == AI.SUCCESS()) {
+            fillFloatArrayWithColor(color, colorComponents);
+        }
+        GL.materialfv(GL.FRONT_AND_BACK(), materialType, colorComponents);
+    }
+
+    private boolean tryGetMaterialValue(AI.Material material, String key, CIntPointer output) {
+        var keyCString = CTypeConversion.toCString("$mat." + key).get();
+        var maxValue = StackValue.get(1, CIntPointer.class);
+        maxValue.write(1);
+        var result = AI.getMaterialIntegerArray(material, keyCString, 0, 0, output, maxValue);
+        return result == AI.SUCCESS();
+    }
+
+    private boolean tryGetMaterialValue(AI.Material material, String key, CFloatPointer output) {
+        var keyCString = CTypeConversion.toCString("$mat." + key).get();
+        var maxValue = StackValue.get(1, CIntPointer.class);
+        maxValue.write(1);
+        var result = AI.getMaterialFloatArray(material, keyCString, 0, 0, output, maxValue);
+        return result == AI.SUCCESS();
     }
 
     private void setFloatArrayValues(CFloatPointer array, float a, float b, float c, float d) {

@@ -10,6 +10,11 @@ import org.graalvm.nativeimage.c.type.CCharPointerPointer;
 import org.graalvm.nativeimage.c.type.CIntPointer;
 import org.graalvm.nativeimage.c.type.VoidPointer;
 
+/**
+ * Constants, functions and structs of the OpenGL Utility Toolkit (GLUT).
+ * These bindings do not provide every feature of the library and may have to be
+ * expanded when needed.
+ */
 @CContext(Directives.class)
 public class GLUT {
     @CConstant("GLUT_SINGLE")

@@ -36,7 +36,7 @@ public class OpenGLRenderer {
     public static final CGlobalData<CFloatPointer> zRotation
             = CGlobalDataFactory.createBytes(() -> 4);
 
-    public static final CGlobalData<CFloatPointer> scale
+    public static final CGlobalData<CFloatPointer> zoom
             = CGlobalDataFactory.createBytes(() -> 4);
 
     public static final CGlobalData<CIntPointer> width
@@ -65,7 +65,7 @@ public class OpenGLRenderer {
         height.get().write(INITIAL_HEIGHT);
         xRotation.get().write(25f);
         zRotation.get().write(225f);
-        scale.get().write(1f);
+        zoom.get().write(1f);
 
         initializeWindow();
         GLUT.hideWindow();
@@ -136,7 +136,7 @@ public class OpenGLRenderer {
     @CEntryPointOptions(prologue = IsolateSingleton.Prologue.class,
                         epilogue = CEntryPointSetup.LeaveEpilogue.class)
     private static void display() {
-        var scalef = scale.get().read();
+        var scale = zoom.get().read();
         GL.bindFramebuffer(GL.FRAMEBUFFER(), fbo.get().read());
         reshape(width.get().read(), height.get().read());
         GL.clear(GL.COLOR_BUFFER_BIT() | GL.DEPTH_BUFFER_BIT());
@@ -146,7 +146,7 @@ public class OpenGLRenderer {
         GL.rotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 
         // apply zoom & roation from user input:
-        GL.scalef(scalef, scalef, scalef);
+        GL.scalef(scale, scale, scale);
         GL.rotatef(xRotation.get().read(), 1f, 0f, 0f);
         GL.rotatef(zRotation.get().read(), 0f, 0f, 1f);
 

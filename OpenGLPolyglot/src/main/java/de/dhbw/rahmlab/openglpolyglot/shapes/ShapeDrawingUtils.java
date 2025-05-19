@@ -6,6 +6,9 @@ import de.dhbw.rahmlab.openglpolyglot.clibraries.GLU;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
 import org.jogamp.vecmath.Vector3d;
 
+/**
+ * Helper class providing common methods for shape drawing
+ */
 public class ShapeDrawingUtils {
 
     private static FTGL.Font font;

@@ -9,6 +9,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import javax.swing.JPanel;
 
+/**
+ * Swing Component for the EuclidViewer3D-Visualizer
+ */
 public class EuclidViewerComponent extends JPanel {
 
     private BufferedImage image;
@@ -47,8 +50,8 @@ public class EuclidViewerComponent extends JPanel {
         this.addMouseWheelListener(new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                var scalePtr = OpenGLRenderer.scale.get();
-                scalePtr.write(scalePtr.read() * (-0.1f*e.getWheelRotation() + 1f));
+                var zoomPtr = OpenGLRenderer.zoom.get();
+                zoomPtr.write(zoomPtr.read() * (-0.1f*e.getWheelRotation() + 1f));
             }
         });
     }

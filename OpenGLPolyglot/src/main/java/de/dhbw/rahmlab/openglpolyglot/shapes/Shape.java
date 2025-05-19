@@ -4,6 +4,9 @@ import de.dhbw.rahmlab.openglpolyglot.AABB;
 import java.util.Collection;
 import org.jogamp.vecmath.Matrix4d;
 
+/**
+ * Interface providing shared methods for 3D-Objects
+ */
 public interface Shape {
 
     public void draw();

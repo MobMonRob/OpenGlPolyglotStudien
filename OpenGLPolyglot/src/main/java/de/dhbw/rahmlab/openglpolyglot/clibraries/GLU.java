@@ -4,6 +4,11 @@ import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.word.PointerBase;
 
+/**
+ * Constants, functions and structs of the OpenGL Utility Library (GLU).
+ * These bindings do not provide every feature of the library and may have to be
+ * expanded when needed.
+ */
 @CContext(Directives.class)
 public class GLU {
     @CFunction("gluOrtho2D")
